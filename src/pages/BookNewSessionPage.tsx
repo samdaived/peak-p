@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
 const BookNewSessionPage = () => {
-  const { user } = useAuth();
+  const { user, users } = useAuth();
   const { addBooking } = useBookings();
   const navigate = useNavigate();
 
