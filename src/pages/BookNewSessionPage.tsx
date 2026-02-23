@@ -32,7 +32,7 @@ const BookNewSessionPage = () => {
 
   const availableTranslators = useMemo(() => {
     if (!selectedLanguage) return [];
-    return MOCK_USERS.filter(
+    return users.filter(
       (u) => u.role === "translator" && u.languages?.includes(selectedLanguage)
     );
   }, [selectedLanguage]);
