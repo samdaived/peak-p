@@ -210,7 +210,31 @@ const ReportsPage = () => {
           </Card>
         )}
 
-        <Card className="overflow-hidden">
+        {user.role === "admin" && translatorRates.length > 0 && (
+          <Card className="p-6">
+            <h3 className="mb-4 font-semibold text-foreground">Breakdown by Translator</h3>
+            <div className="space-y-3">
+              {translatorRates.map(([id, { name }]) => {
+                const tBookings = filtered.filter((b) => b.translatorId === id);
+                const tMinutes = tBookings.reduce((s, b) => s + b.duration, 0);
+                const tCost = tBookings.reduce((s, b) => s + (getRate(b.translatorId) * b.duration) / 60, 0);
+                return (
+                  <div key={id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-3 w-3 rounded-full bg-accent-foreground" />
+                      <span className="font-medium text-foreground">{name}</span>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {tBookings.length} sessions · {Math.floor(tMinutes / 60)}h {tMinutes % 60}m · €{tCost.toFixed(2)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
+
           <h3 className="px-4 py-3 font-semibold text-foreground border-b">Session Details</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
