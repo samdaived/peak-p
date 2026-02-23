@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { MOCK_USERS } from "@/data/mockData";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,17 +7,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Pencil } from "lucide-react";
 import { User, UserRole } from "@/types";
+import { toast } from "@/hooks/use-toast";
 
 const ManageUsersPage = () => {
-  const { user } = useAuth();
-  const [users, setUsers] = useState<User[]>(MOCK_USERS);
+  const { user, users, updateUser } = useAuth();
   const [filterRole, setFilterRole] = useState<string>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  // Add user form
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newRole, setNewRole] = useState<UserRole>("customer");
+  const [newHourlyRate, setNewHourlyRate] = useState("");
+
+  // Edit user form
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editHourlyRate, setEditHourlyRate] = useState("");
 
   if (!user || user.role !== "admin") return null;
 
@@ -31,11 +40,36 @@ const ManageUsersPage = () => {
       name: newName,
       email: newEmail,
       role: newRole,
+      password: "password123",
+      ...(newRole === "translator" && newHourlyRate ? { hourlyRate: Number(newHourlyRate) } : {}),
     };
-    setUsers([...users, newUser]);
+    updateUser(newUser);
     setNewName("");
     setNewEmail("");
+    setNewHourlyRate("");
     setDialogOpen(false);
+    toast({ title: "User added", description: `${newName} has been added as ${newRole}` });
+  };
+
+  const openEdit = (u: User) => {
+    setEditingUser(u);
+    setEditName(u.name);
+    setEditEmail(u.email);
+    setEditHourlyRate(u.hourlyRate?.toString() || "");
+    setEditDialogOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!editingUser || !editName || !editEmail) return;
+    const updated: User = {
+      ...editingUser,
+      name: editName,
+      email: editEmail,
+      ...(editingUser.role === "translator" ? { hourlyRate: editHourlyRate ? Number(editHourlyRate) : undefined } : {}),
+    };
+    updateUser(updated);
+    setEditDialogOpen(false);
+    toast({ title: "User updated", description: `${editName} has been updated` });
   };
 
   return (
@@ -73,6 +107,12 @@ const ManageUsersPage = () => {
                   </SelectContent>
                 </Select>
               </div>
+              {newRole === "translator" && (
+                <div>
+                  <Label>Hourly Rate (€)</Label>
+                  <Input type="number" value={newHourlyRate} onChange={(e) => setNewHourlyRate(e.target.value)} placeholder="e.g. 50" />
+                </div>
+              )}
               <Button onClick={handleAdd} className="w-full">Add User</Button>
             </div>
           </DialogContent>
@@ -103,8 +143,16 @@ const ManageUsersPage = () => {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-foreground truncate">{u.name}</p>
                 <p className="text-sm text-muted-foreground truncate">{u.email}</p>
+                {u.role === "translator" && u.hourlyRate && (
+                  <p className="text-xs text-primary font-medium">€{u.hourlyRate}/hr</p>
+                )}
               </div>
-              <Badge variant="secondary" className="capitalize shrink-0">{u.role}</Badge>
+              <div className="flex items-center gap-2 shrink-0">
+                <Badge variant="secondary" className="capitalize">{u.role}</Badge>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(u)}>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
             {u.languages && (
               <div className="mt-2 flex flex-wrap gap-1">
@@ -116,6 +164,32 @@ const ManageUsersPage = () => {
           </Card>
         ))}
       </div>
+
+      {/* Edit User Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div>
+              <Label>Name</Label>
+              <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
+            </div>
+            {editingUser?.role === "translator" && (
+              <div>
+                <Label>Hourly Rate (€)</Label>
+                <Input type="number" value={editHourlyRate} onChange={(e) => setEditHourlyRate(e.target.value)} placeholder="e.g. 50" />
+              </div>
+            )}
+            <Button onClick={handleEdit} className="w-full">Save Changes</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

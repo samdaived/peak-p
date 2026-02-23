@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useBookings } from "@/context/BookingsContext";
-import { LANGUAGES, MOCK_USERS } from "@/data/mockData";
+import { LANGUAGES } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 
 const BookNewSessionPage = () => {
-  const { user } = useAuth();
+  const { user, users } = useAuth();
   const { addBooking } = useBookings();
   const navigate = useNavigate();
 
@@ -32,12 +32,12 @@ const BookNewSessionPage = () => {
 
   const availableTranslators = useMemo(() => {
     if (!selectedLanguage) return [];
-    return MOCK_USERS.filter(
+    return users.filter(
       (u) => u.role === "translator" && u.languages?.includes(selectedLanguage)
     );
   }, [selectedLanguage]);
 
-  const selectedTranslator = MOCK_USERS.find((u) => u.id === selectedTranslatorId);
+  const selectedTranslator = users.find((u) => u.id === selectedTranslatorId);
 
   if (!user || user.role !== "customer") return null;
 

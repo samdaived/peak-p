@@ -8,6 +8,8 @@ export interface User {
   languages?: string[];
   phone?: string;
   avatar?: string;
+  password?: string;
+  hourlyRate?: number; // for translators
 }
 
 export type BookingStatus = "upcoming" | "completed" | "cancelled";

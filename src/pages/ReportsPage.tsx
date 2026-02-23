@@ -8,12 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Printer } from "lucide-react";
 
 const ReportsPage = () => {
-  const { user } = useAuth();
+  const { user, users } = useAuth();
   const today = new Date().toISOString().split("T")[0];
   const thirtyAgo = new Date(Date.now() - 30 * 86400000).toISOString().split("T")[0];
 
   const [from, setFrom] = useState(thirtyAgo);
   const [to, setTo] = useState(today);
+  const [rateOverrides, setRateOverrides] = useState<Record<string, number>>({});
 
   const { bookings } = useBookings();
 
@@ -35,15 +36,40 @@ const ReportsPage = () => {
   const hours = Math.floor(totalMinutes / 60);
   const mins = totalMinutes % 60;
 
+  const getRate = (translatorId: string) => {
+    if (rateOverrides[translatorId] !== undefined) return rateOverrides[translatorId];
+    const translator = users.find((u) => u.id === translatorId);
+    return translator?.hourlyRate || 0;
+  };
+
+  const totalCost = useMemo(() => {
+    return filtered.reduce((sum, b) => {
+      const rate = getRate(b.translatorId);
+      return sum + (rate * b.duration) / 60;
+    }, 0);
+  }, [filtered, rateOverrides, users]);
+
   const langBreakdown = useMemo(() => {
-    const map: Record<string, { count: number; minutes: number }> = {};
+    const map: Record<string, { count: number; minutes: number; cost: number }> = {};
     filtered.forEach((b) => {
-      if (!map[b.language]) map[b.language] = { count: 0, minutes: 0 };
+      if (!map[b.language]) map[b.language] = { count: 0, minutes: 0, cost: 0 };
       map[b.language].count++;
       map[b.language].minutes += b.duration;
+      map[b.language].cost += (getRate(b.translatorId) * b.duration) / 60;
     });
     return Object.entries(map).sort((a, b) => b[1].minutes - a[1].minutes);
-  }, [filtered]);
+  }, [filtered, rateOverrides, users]);
+
+  // Get unique translators in filtered results
+  const translatorRates = useMemo(() => {
+    const map = new Map<string, { name: string; rate: number }>();
+    filtered.forEach((b) => {
+      if (!map.has(b.translatorId)) {
+        map.set(b.translatorId, { name: b.translatorName, rate: getRate(b.translatorId) });
+      }
+    });
+    return Array.from(map.entries());
+  }, [filtered, rateOverrides, users]);
 
   if (!user) return null;
 
@@ -73,8 +99,34 @@ const ReportsPage = () => {
         </div>
       </Card>
 
+      {/* Adjustable hourly rates */}
+      {translatorRates.length > 0 && (
+        <Card className="no-print p-4">
+          <h3 className="mb-3 font-semibold text-foreground text-sm">Translator Hourly Rates (adjustable)</h3>
+          <div className="flex flex-wrap gap-4">
+            {translatorRates.map(([id, { name, rate }]) => (
+              <div key={id} className="flex items-center gap-2">
+                <Label className="text-sm whitespace-nowrap">{name}</Label>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-muted-foreground">€</span>
+                  <Input
+                    type="number"
+                    className="w-20 h-8"
+                    value={rateOverrides[id] !== undefined ? rateOverrides[id] : rate}
+                    onChange={(e) =>
+                      setRateOverrides((prev) => ({ ...prev, [id]: Number(e.target.value) }))
+                    }
+                  />
+                  <span className="text-xs text-muted-foreground">/hr</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       <div className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-4">
           <Card className="stat-card">
             <p className="text-sm text-muted-foreground">Total Sessions</p>
             <p className="mt-1 text-3xl font-bold text-foreground">{filtered.length}</p>
@@ -86,6 +138,10 @@ const ReportsPage = () => {
           <Card className="stat-card">
             <p className="text-sm text-muted-foreground">Languages Used</p>
             <p className="mt-1 text-3xl font-bold text-foreground">{langBreakdown.length}</p>
+          </Card>
+          <Card className="stat-card">
+            <p className="text-sm text-muted-foreground">Total Cost</p>
+            <p className="mt-1 text-3xl font-bold text-foreground">€{totalCost.toFixed(2)}</p>
           </Card>
         </div>
 
@@ -100,7 +156,7 @@ const ReportsPage = () => {
                     <span className="font-medium text-foreground">{lang}</span>
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    {data.count} sessions · {Math.floor(data.minutes / 60)}h {data.minutes % 60}m
+                    {data.count} sessions · {Math.floor(data.minutes / 60)}h {data.minutes % 60}m · €{data.cost.toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -120,22 +176,30 @@ const ReportsPage = () => {
                   {user.role !== "translator" && <th className="px-4 py-2 text-left font-medium text-muted-foreground">Translator</th>}
                   <th className="px-4 py-2 text-left font-medium text-muted-foreground">Language</th>
                   <th className="px-4 py-2 text-left font-medium text-muted-foreground">Duration</th>
+                  <th className="px-4 py-2 text-left font-medium text-muted-foreground">Rate</th>
+                  <th className="px-4 py-2 text-left font-medium text-muted-foreground">Cost</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No completed sessions in this period</td></tr>
+                  <tr><td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">No completed sessions in this period</td></tr>
                 ) : (
-                  filtered.map((b) => (
-                    <tr key={b.id} className="border-b last:border-0">
-                      <td className="px-4 py-2 text-foreground">{b.date}</td>
-                      <td className="px-4 py-2 text-muted-foreground">{b.startTime}–{b.endTime}</td>
-                      {user.role !== "customer" && <td className="px-4 py-2 text-foreground">{b.customerName}</td>}
-                      {user.role !== "translator" && <td className="px-4 py-2 text-foreground">{b.translatorName}</td>}
-                      <td className="px-4 py-2 text-foreground">{b.language}</td>
-                      <td className="px-4 py-2 text-muted-foreground">{b.duration} min</td>
-                    </tr>
-                  ))
+                  filtered.map((b) => {
+                    const rate = getRate(b.translatorId);
+                    const cost = (rate * b.duration) / 60;
+                    return (
+                      <tr key={b.id} className="border-b last:border-0">
+                        <td className="px-4 py-2 text-foreground">{b.date}</td>
+                        <td className="px-4 py-2 text-muted-foreground">{b.startTime}–{b.endTime}</td>
+                        {user.role !== "customer" && <td className="px-4 py-2 text-foreground">{b.customerName}</td>}
+                        {user.role !== "translator" && <td className="px-4 py-2 text-foreground">{b.translatorName}</td>}
+                        <td className="px-4 py-2 text-foreground">{b.language}</td>
+                        <td className="px-4 py-2 text-muted-foreground">{b.duration} min</td>
+                        <td className="px-4 py-2 text-muted-foreground">€{rate}/hr</td>
+                        <td className="px-4 py-2 font-medium text-foreground">€{cost.toFixed(2)}</td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
