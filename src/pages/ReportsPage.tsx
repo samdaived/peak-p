@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Printer } from "lucide-react";
 
 const ReportsPage = () => {
@@ -15,17 +16,36 @@ const ReportsPage = () => {
   const [from, setFrom] = useState(thirtyAgo);
   const [to, setTo] = useState(today);
   const [rateOverrides, setRateOverrides] = useState<Record<string, number>>({});
+  const [selectedTranslatorIds, setSelectedTranslatorIds] = useState<string[]>([]);
 
   const { bookings } = useBookings();
 
+  const allTranslators = useMemo(() => users.filter((u) => u.role === "translator"), [users]);
+
+  const toggleTranslator = (id: string) => {
+    setSelectedTranslatorIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const selectAllTranslators = () => {
+    if (selectedTranslatorIds.length === allTranslators.length) {
+      setSelectedTranslatorIds([]);
+    } else {
+      setSelectedTranslatorIds(allTranslators.map((t) => t.id));
+    }
+  };
+
   const myBookings = useMemo(() => {
     if (!user) return [];
-    return user.role === "admin"
-      ? bookings
-      : bookings.filter((b) =>
-          user.role === "translator" ? b.translatorId === user.id : b.customerId === user.id
-        );
-  }, [user, bookings]);
+    if (user.role === "admin") {
+      if (selectedTranslatorIds.length === 0) return bookings;
+      return bookings.filter((b) => selectedTranslatorIds.includes(b.translatorId));
+    }
+    return bookings.filter((b) =>
+      user.role === "translator" ? b.translatorId === user.id : b.customerId === user.id
+    );
+  }, [user, bookings, selectedTranslatorIds]);
 
   const filtered = useMemo(
     () => myBookings.filter((b) => b.date >= from && b.date <= to && b.status === "completed"),
@@ -97,6 +117,32 @@ const ReportsPage = () => {
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-44" />
           </div>
         </div>
+
+        {user.role === "admin" && (
+          <div className="mt-4 border-t pt-4">
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-sm font-semibold">Filter by Translator</Label>
+              <Button variant="ghost" size="sm" onClick={selectAllTranslators} className="text-xs h-7">
+                {selectedTranslatorIds.length === allTranslators.length ? "Deselect All" : "Select All"}
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {allTranslators.map((t) => (
+                <label key={t.id} className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={selectedTranslatorIds.includes(t.id)}
+                    onCheckedChange={() => toggleTranslator(t.id)}
+                  />
+                  <span className="text-sm text-foreground">{t.name}</span>
+                  {t.hourlyRate && <span className="text-xs text-muted-foreground">(€{t.hourlyRate}/hr)</span>}
+                </label>
+              ))}
+            </div>
+            {selectedTranslatorIds.length === 0 && (
+              <p className="text-xs text-muted-foreground mt-2">No filter applied — showing all translators</p>
+            )}
+          </div>
+        )}
       </Card>
 
       {/* Adjustable hourly rates */}
@@ -163,6 +209,31 @@ const ReportsPage = () => {
             </div>
           </Card>
         )}
+
+        {user.role === "admin" && translatorRates.length > 0 && (
+          <Card className="p-6">
+            <h3 className="mb-4 font-semibold text-foreground">Breakdown by Translator</h3>
+            <div className="space-y-3">
+              {translatorRates.map(([id, { name }]) => {
+                const tBookings = filtered.filter((b) => b.translatorId === id);
+                const tMinutes = tBookings.reduce((s, b) => s + b.duration, 0);
+                const tCost = tBookings.reduce((s, b) => s + (getRate(b.translatorId) * b.duration) / 60, 0);
+                return (
+                  <div key={id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-3 w-3 rounded-full bg-accent-foreground" />
+                      <span className="font-medium text-foreground">{name}</span>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {tBookings.length} sessions · {Math.floor(tMinutes / 60)}h {tMinutes % 60}m · €{tCost.toFixed(2)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
 
         <Card className="overflow-hidden">
           <h3 className="px-4 py-3 font-semibold text-foreground border-b">Session Details</h3>
