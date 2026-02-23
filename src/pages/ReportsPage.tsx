@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Printer } from "lucide-react";
 
 const ReportsPage = () => {
@@ -15,17 +16,36 @@ const ReportsPage = () => {
   const [from, setFrom] = useState(thirtyAgo);
   const [to, setTo] = useState(today);
   const [rateOverrides, setRateOverrides] = useState<Record<string, number>>({});
+  const [selectedTranslatorIds, setSelectedTranslatorIds] = useState<string[]>([]);
 
   const { bookings } = useBookings();
 
+  const allTranslators = useMemo(() => users.filter((u) => u.role === "translator"), [users]);
+
+  const toggleTranslator = (id: string) => {
+    setSelectedTranslatorIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const selectAllTranslators = () => {
+    if (selectedTranslatorIds.length === allTranslators.length) {
+      setSelectedTranslatorIds([]);
+    } else {
+      setSelectedTranslatorIds(allTranslators.map((t) => t.id));
+    }
+  };
+
   const myBookings = useMemo(() => {
     if (!user) return [];
-    return user.role === "admin"
-      ? bookings
-      : bookings.filter((b) =>
-          user.role === "translator" ? b.translatorId === user.id : b.customerId === user.id
-        );
-  }, [user, bookings]);
+    if (user.role === "admin") {
+      if (selectedTranslatorIds.length === 0) return bookings;
+      return bookings.filter((b) => selectedTranslatorIds.includes(b.translatorId));
+    }
+    return bookings.filter((b) =>
+      user.role === "translator" ? b.translatorId === user.id : b.customerId === user.id
+    );
+  }, [user, bookings, selectedTranslatorIds]);
 
   const filtered = useMemo(
     () => myBookings.filter((b) => b.date >= from && b.date <= to && b.status === "completed"),
