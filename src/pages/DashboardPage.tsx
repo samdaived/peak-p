@@ -1,6 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
 import { useBookings } from "@/context/BookingsContext";
-import { MOCK_USERS } from "@/data/mockData";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Users, Languages, TrendingUp } from "lucide-react";
