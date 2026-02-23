@@ -117,6 +117,32 @@ const ReportsPage = () => {
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-44" />
           </div>
         </div>
+
+        {user.role === "admin" && (
+          <div className="mt-4 border-t pt-4">
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-sm font-semibold">Filter by Translator</Label>
+              <Button variant="ghost" size="sm" onClick={selectAllTranslators} className="text-xs h-7">
+                {selectedTranslatorIds.length === allTranslators.length ? "Deselect All" : "Select All"}
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {allTranslators.map((t) => (
+                <label key={t.id} className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={selectedTranslatorIds.includes(t.id)}
+                    onCheckedChange={() => toggleTranslator(t.id)}
+                  />
+                  <span className="text-sm text-foreground">{t.name}</span>
+                  {t.hourlyRate && <span className="text-xs text-muted-foreground">(€{t.hourlyRate}/hr)</span>}
+                </label>
+              ))}
+            </div>
+            {selectedTranslatorIds.length === 0 && (
+              <p className="text-xs text-muted-foreground mt-2">No filter applied — showing all translators</p>
+            )}
+          </div>
+        )}
       </Card>
 
       {/* Adjustable hourly rates */}
