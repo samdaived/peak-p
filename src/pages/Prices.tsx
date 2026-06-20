@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { LogOut, Heart, ShoppingCart, X, ListOrdered } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, callEdgeFunction } from '@/lib/customSupabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -38,15 +38,30 @@ const Prices = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: prods } = await supabase.from('products').select('*').eq('active', true).order('sku');
-      setProducts((prods as Product[]) ?? []);
+      // Products come from your custom Supabase edge function.
+      // The function should return either an array of products or { products: Product[] }.
+      const { data, error } = await callEdgeFunction<Product[] | { products: Product[] }>(
+        'database-access',
+      );
+      if (error) {
+        toast({ title: 'Could not load products', description: error.message, variant: 'destructive' });
+      } else if (data) {
+        const list = Array.isArray(data) ? data : data.products ?? [];
+        setProducts(list);
+      }
+
       if (user) {
-        const { data: favs } = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
-        setFavorites(new Set((favs ?? []).map((f: any) => f.product_id)));
-        const { data: profile } = await supabase.from('profiles').select('phone, shipping_address').eq('id', user.id).maybeSingle();
-        if (profile) {
-          setPhone(profile.phone ?? '');
-          setAddress(profile.shipping_address ?? '');
+        // TODO: replace with your own edge function once it's ready.
+        try {
+          const { data: favs } = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
+          setFavorites(new Set((favs ?? []).map((f: any) => f.product_id)));
+          const { data: profile } = await supabase.from('profiles').select('phone, shipping_address').eq('id', user.id).maybeSingle();
+          if (profile) {
+            setPhone(profile.phone ?? '');
+            setAddress(profile.shipping_address ?? '');
+          }
+        } catch {
+          /* tables not created yet — ignore */
         }
       }
     };
