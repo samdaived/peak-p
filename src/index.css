@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 180 20% 99%;
+    --foreground: 200 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 25% 15%;
+
+    --primary: 168 65% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 45 85% 55%;
+    --secondary-foreground: 200 25% 15%;
+
+    --muted: 180 15% 95%;
+    --muted-foreground: 200 15% 45%;
+
+    --accent: 168 45% 92%;
+    --accent-foreground: 168 65% 28%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 180 20% 88%;
+    --input: 180 20% 88%;
+    --ring: 168 65% 38%;
+
+    --radius: 0.75rem;
+
+    /* Custom brand tokens */
+    --gold: 45 85% 55%;
+    --gold-dark: 40 75% 45%;
+    --teal-light: 168 45% 95%;
+    --teal-dark: 168 70% 25%;
+    
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 200 25% 8%;
+    --foreground: 180 20% 95%;
+
+    --card: 200 25% 10%;
+    --card-foreground: 180 20% 95%;
+
+    --popover: 200 25% 10%;
+    --popover-foreground: 180 20% 95%;
+
+    --primary: 168 55% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 45 70% 50%;
+    --secondary-foreground: 200 25% 10%;
+
+    --muted: 200 20% 18%;
+    --muted-foreground: 180 15% 65%;
+
+    --accent: 168 35% 20%;
+    --accent-foreground: 168 45% 80%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 200 20% 20%;
+    --input: 200 20% 20%;
+    --ring: 168 55% 45%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    font-family: 'Inter', 'Cairo', sans-serif;
+  }
+}
+
+@layer components {
+  .gradient-hero {
+    background: linear-gradient(135deg, hsl(168 45% 95%) 0%, hsl(180 30% 98%) 50%, hsl(45 60% 97%) 100%);
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(168 65% 38%) 0%, hsl(168 70% 32%) 100%);
+  }
+
+  .gradient-gold {
+    background: linear-gradient(135deg, hsl(45 85% 55%) 0%, hsl(40 80% 50%) 100%);
+  }
+
+  .text-gradient-primary {
+    background: linear-gradient(135deg, hsl(168 65% 38%) 0%, hsl(168 70% 32%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(45 85% 55%) 0%, hsl(35 80% 45%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 4px 20px -4px hsl(168 30% 30% / 0.15);
+  }
+
+  .shadow-card {
+    box-shadow: 0 8px 30px -8px hsl(168 30% 20% / 0.12);
+  }
+
+  .shadow-gold {
+    box-shadow: 0 8px 25px -6px hsl(45 85% 55% / 0.35);
+  }
+
+  .glass-card {
+    background: hsl(0 0% 100% / 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(180 20% 88% / 0.5);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.8s ease-out forwards;
+  }
+
+  .animate-pulse-soft {
+    animation: pulseSoft 3s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
