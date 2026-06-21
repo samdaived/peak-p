@@ -33,21 +33,49 @@ type Order = {
 
 const empty = { sku: '', name: '', category: '', price: '0', description: '' };
 
+type FavoriteRow = {
+  product_id: string;
+  product_name: string;
+  product_sku: string;
+  buyers: { user_id: string; company_name: string | null; created_at: string }[];
+};
+
 const Admin = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteRow[]>([]);
   const [form, setForm] = useState(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const load = async () => {
-    const [{ data: p }, { data: o }] = await Promise.all([
+    const [{ data: p }, { data: o }, { data: f }] = await Promise.all([
       supabase.from('products').select('*').order('sku'),
       supabase.from('orders').select('*').order('created_at', { ascending: false }),
+      supabase.from('favorites').select('user_id, product_id, created_at, products(name, sku), profiles(company_name)'),
     ]);
     setProducts((p as Product[]) ?? []);
     setOrders((o as Order[]) ?? []);
+
+    const grouped = new Map<string, FavoriteRow>();
+    ((f as any[]) ?? []).forEach((row) => {
+      const key = row.product_id;
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          product_id: key,
+          product_name: row.products?.name ?? '—',
+          product_sku: row.products?.sku ?? '',
+          buyers: [],
+        });
+      }
+      grouped.get(key)!.buyers.push({
+        user_id: row.user_id,
+        company_name: row.profiles?.company_name ?? null,
+        created_at: row.created_at,
+      });
+    });
+    setFavorites([...grouped.values()].sort((a, b) => b.buyers.length - a.buyers.length));
   };
 
   useEffect(() => { load(); }, []);
