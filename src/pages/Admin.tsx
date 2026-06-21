@@ -209,6 +209,37 @@ const Admin = () => {
               )}
             </Card>
           </TabsContent>
+
+          <TabsContent value="favorites">
+            <Card className="p-6 overflow-x-auto">
+              {favorites.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No favorites yet.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>SKU</TableHead>
+                      <TableHead>Product</TableHead>
+                      <TableHead className="text-right">Favorited by</TableHead>
+                      <TableHead>Buyers</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {favorites.map((f) => (
+                      <TableRow key={f.product_id}>
+                        <TableCell className="font-mono text-xs">{f.product_sku}</TableCell>
+                        <TableCell className="font-medium">{f.product_name}</TableCell>
+                        <TableCell className="text-right font-semibold">{f.buyers.length}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {f.buyers.map((b) => b.company_name || b.user_id.slice(0, 8)).join(', ')}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
