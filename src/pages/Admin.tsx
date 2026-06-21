@@ -29,6 +29,7 @@ type Order = {
   user_id: string;
   phone: string | null;
   shipping_address: string | null;
+  email?: string | null;
 };
 
 const empty = { sku: '', name: '', category: '', price: '0', description: '' };
@@ -37,7 +38,7 @@ type FavoriteRow = {
   product_id: string;
   product_name: string;
   product_sku: string;
-  buyers: { user_id: string; company_name: string | null; created_at: string }[];
+  buyers: { user_id: string; company_name: string | null; email: string | null; created_at: string }[];
 };
 
 const Admin = () => {
@@ -56,10 +57,25 @@ const Admin = () => {
       supabase.from('favorites').select('user_id, product_id, created_at, products(name, sku), profiles(company_name)'),
     ]);
     setProducts((p as Product[]) ?? []);
-    setOrders((o as Order[]) ?? []);
+
+    const orderRows = (o as Order[]) ?? [];
+    const favRows = (f as any[]) ?? [];
+
+    const userIds = Array.from(new Set([
+      ...orderRows.map((r) => r.user_id),
+      ...favRows.map((r) => r.user_id),
+    ].filter(Boolean)));
+
+    const emailMap = new Map<string, string>();
+    if (userIds.length) {
+      const { data: emails } = await supabase.rpc('get_user_emails', { _user_ids: userIds });
+      ((emails as any[]) ?? []).forEach((e) => emailMap.set(e.user_id, e.email));
+    }
+
+    setOrders(orderRows.map((row) => ({ ...row, email: emailMap.get(row.user_id) ?? null })));
 
     const grouped = new Map<string, FavoriteRow>();
-    ((f as any[]) ?? []).forEach((row) => {
+    favRows.forEach((row) => {
       const key = row.product_id;
       if (!grouped.has(key)) {
         grouped.set(key, {
@@ -72,6 +88,7 @@ const Admin = () => {
       grouped.get(key)!.buyers.push({
         user_id: row.user_id,
         company_name: row.profiles?.company_name ?? null,
+        email: emailMap.get(row.user_id) ?? null,
         created_at: row.created_at,
       });
     });
@@ -189,6 +206,7 @@ const Admin = () => {
                     <TableRow>
                       <TableHead>Order #</TableHead>
                       <TableHead>Date</TableHead>
+                      <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Total</TableHead>
@@ -199,6 +217,7 @@ const Admin = () => {
                       <TableRow key={o.id}>
                         <TableCell className="font-mono text-xs">{o.id.slice(0, 8)}</TableCell>
                         <TableCell>{new Date(o.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-sm">{o.email ?? '—'}</TableCell>
                         <TableCell>{o.phone}</TableCell>
                         <TableCell className="capitalize">{o.status}</TableCell>
                         <TableCell className="text-right font-semibold">{Number(o.total).toFixed(2)}</TableCell>
@@ -231,7 +250,7 @@ const Admin = () => {
                         <TableCell className="font-medium">{f.product_name}</TableCell>
                         <TableCell className="text-right font-semibold">{f.buyers.length}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">
-                          {f.buyers.map((b) => b.company_name || b.user_id.slice(0, 8)).join(', ')}
+                          {f.buyers.map((b) => b.email || b.company_name || b.user_id.slice(0, 8)).join(', ')}
                         </TableCell>
                       </TableRow>
                     ))}
