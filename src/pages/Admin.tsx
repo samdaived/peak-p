@@ -131,6 +131,7 @@ const Admin = () => {
           <TabsList>
             <TabsTrigger value="products">Products ({products.length})</TabsTrigger>
             <TabsTrigger value="orders">Orders ({orders.length})</TabsTrigger>
+            <TabsTrigger value="favorites">Favorites ({favorites.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
