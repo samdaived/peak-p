@@ -196,8 +196,9 @@ const Admin = () => {
             const isOpen = expanded.has(o.id);
             const canCancel = allowCancel && o.status.toLowerCase() === 'pending';
             return (
-              <>
-                <TableRow key={o.id} className="cursor-pointer" onClick={() => toggleExpand(o.id)}>
+              <Fragment key={o.id}>
+                <TableRow className="cursor-pointer" onClick={() => toggleExpand(o.id)}>
+
                   <TableCell>
                     {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </TableCell>
@@ -217,7 +218,7 @@ const Admin = () => {
                   </TableCell>
                 </TableRow>
                 {isOpen && (
-                  <TableRow key={o.id + '-details'} className="bg-muted/30 hover:bg-muted/30">
+                  <TableRow className="bg-muted/30 hover:bg-muted/30">
                     <TableCell></TableCell>
                     <TableCell colSpan={8}>
                       <div className="space-y-4 py-2">
@@ -274,7 +275,7 @@ const Admin = () => {
                     </TableCell>
                   </TableRow>
                 )}
-              </>
+              </Fragment>
             );
           })}
         </TableBody>
