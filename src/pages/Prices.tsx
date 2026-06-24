@@ -124,7 +124,7 @@ const Prices = () => {
       .single();
     if (orderErr || !order) {
       setSubmitting(false);
-      return toast({ title: 'Could not create order', description: orderErr?.message, variant: 'destructive' });
+      return toast({ title: tp.cannotCreate, description: orderErr?.message, variant: 'destructive' });
     }
     const items = cartItems.map((l) => ({
       order_id: order.id,
@@ -135,12 +135,12 @@ const Prices = () => {
     }));
     const { error: itemsErr } = await supabase.from('order_items').insert(items);
     setSubmitting(false);
-    if (itemsErr) return toast({ title: 'Could not save items', description: itemsErr.message, variant: 'destructive' });
+    if (itemsErr) return toast({ title: tp.cannotSaveItems, description: itemsErr.message, variant: 'destructive' });
 
     // persist profile defaults
     await supabase.from('profiles').upsert({ id: user.id, phone, shipping_address: address });
 
-    toast({ title: 'Order placed!', description: `Total: ${cartTotal.toFixed(2)} MAD` });
+    toast({ title: tp.orderPlaced, description: `${tp.total}: ${cartTotal.toFixed(2)} MAD` });
     setCart({});
     setShowCart(false);
     setNotes('');
@@ -158,42 +158,42 @@ const Prices = () => {
   }, [products, favorites]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div dir={direction} className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1 p-4 md:p-8 pt-24 md:pt-28">
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">Wholesale Prices</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">{tp.title}</h1>
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => navigate('/orders')}>
-                <ListOrdered className="h-4 w-4 mr-2" /> My orders
+                <ListOrdered className="h-4 w-4 mr-2" /> {tp.myOrders}
               </Button>
               <Button onClick={() => setShowCart((s) => !s)}>
-                <ShoppingCart className="h-4 w-4 mr-2" /> Cart ({cartItems.length})
+                <ShoppingCart className="h-4 w-4 mr-2" /> {tp.cart} ({cartItems.length})
               </Button>
               <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" /> Logout
+                <LogOut className="h-4 w-4 mr-2" /> {tp.logout}
               </Button>
             </div>
           </div>
 
           {showCart && (
             <Card className="p-6 space-y-4">
-              <h2 className="text-lg font-semibold">Your order</h2>
+              <h2 className="text-lg font-semibold">{tp.yourOrder}</h2>
               {cartItems.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Cart is empty.</p>
+                <p className="text-sm text-muted-foreground">{tp.empty}</p>
               ) : (
                 <>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Product</TableHead>
-                        <TableHead>Quantity</TableHead>
-                        <TableHead>Date needed</TableHead>
-                        <TableHead className="text-right">Subtotal</TableHead>
+                        <TableHead>{tp.product}</TableHead>
+                        <TableHead>{tp.quantity}</TableHead>
+                        <TableHead>{tp.dateNeeded}</TableHead>
+                        <TableHead className="text-right">{tp.subtotal}</TableHead>
                         <TableHead></TableHead>
                       </TableRow>
                     </TableHeader>
@@ -231,23 +231,23 @@ const Prices = () => {
 
                   <div className="grid md:grid-cols-3 gap-4 pt-4 border-t">
                     <div className="space-y-2">
-                      <Label>Phone</Label>
+                      <Label>{tp.phone}</Label>
                       <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                      <Label>Shipping address</Label>
+                      <Label>{tp.shippingAddress}</Label>
                       <Input value={address} onChange={(e) => setAddress(e.target.value)} />
                     </div>
                     <div className="space-y-2 md:col-span-3">
-                      <Label>Notes</Label>
+                      <Label>{tp.notes}</Label>
                       <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t">
-                    <div className="text-lg font-bold">Total: {cartTotal.toFixed(2)} MAD</div>
+                    <div className="text-lg font-bold">{tp.total}: {cartTotal.toFixed(2)} MAD</div>
                     <Button onClick={submitOrder} disabled={submitting}>
-                      {submitting ? 'Placing…' : 'Place order'}
+                      {submitting ? tp.placing : tp.placeOrder}
                     </Button>
                   </div>
                 </>
@@ -260,10 +260,10 @@ const Prices = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead></TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Price (MAD)</TableHead>
+                  <TableHead>{tp.sku}</TableHead>
+                  <TableHead>{tp.product}</TableHead>
+                  <TableHead>{tp.category}</TableHead>
+                  <TableHead className="text-right">{tp.price}</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -280,7 +280,7 @@ const Prices = () => {
                     <TableCell className="text-muted-foreground">{p.category}</TableCell>
                     <TableCell className="text-right font-semibold">{Number(p.price).toFixed(2)}</TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" onClick={() => addToCart(p)}>Add</Button>
+                      <Button size="sm" onClick={() => addToCart(p)}>{tp.add}</Button>
                     </TableCell>
                   </TableRow>
                 ))}
