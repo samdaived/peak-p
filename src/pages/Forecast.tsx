@@ -14,6 +14,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const Forecast = () => {
   const navigate = useNavigate();
+  const { t, direction } = useLanguage();
+  const tf = t.forecast;
   const [buyer, setBuyer] = useState<BuyerAccount | null>(null);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Record<string, number>>({});
