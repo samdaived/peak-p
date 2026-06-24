@@ -47,7 +47,7 @@ const Prices = () => {
         'database-access',
       );
       if (error) {
-        toast({ title: 'Could not load products', description: error.message, variant: 'destructive' });
+        toast({ title: tp.couldNotLoad, description: error.message, variant: 'destructive' });
       } else if (data) {
         const list = Array.isArray(data) ? data : data.products ?? [];
         setProducts(list);
