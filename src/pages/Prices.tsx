@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { LogOut, Heart, ShoppingCart, X, ListOrdered } from 'lucide-react';
 import { supabase, callEdgeFunction } from '@/lib/customSupabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { toast } from '@/hooks/use-toast';
