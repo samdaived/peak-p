@@ -10,6 +10,7 @@ import { getCurrentBuyer, logout, type BuyerAccount } from '@/lib/buyerAuth';
 import { PRODUCTS } from '@/lib/products';
 import { isFormConfigured, submitForecastRow } from '@/lib/forecastSubmit';
 import { Search } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Forecast = () => {
   const navigate = useNavigate();
