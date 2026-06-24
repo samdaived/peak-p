@@ -78,7 +78,7 @@ const Prices = () => {
       const next = new Set(favorites); next.delete(p.id); setFavorites(next);
     } else {
       const { error } = await supabase.from('favorites').insert({ user_id: user.id, product_id: p.id });
-      if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      if (error) return toast({ title: tp.error, description: error.message, variant: 'destructive' });
       setFavorites(new Set(favorites).add(p.id));
     }
   };
@@ -90,7 +90,7 @@ const Prices = () => {
         ? { ...c[p.id], quantity: c[p.id].quantity + 1 }
         : { product: p, quantity: 1, date_needed: '' },
     }));
-    toast({ title: `${p.name} added` });
+    toast({ title: `${p.name} ${tp.added}` });
   };
 
   const updateLine = (id: string, patch: Partial<CartLine>) => {
