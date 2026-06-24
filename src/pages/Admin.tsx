@@ -91,13 +91,13 @@ const Admin = () => {
       supabase
         .from("orders")
         .select(
-          "*, order_items(*, products(name, sku)), profiles(company_name)",
+          "*, order_items(*, products(name, sku)), profiles(company_name,email)",
         )
         .order("created_at", { ascending: false }),
       supabase
         .from("favorites")
         .select(
-          "user_id, product_id, created_at, products(name, sku), profiles(company_name)",
+          "user_id, product_id, created_at, products(name, sku), profiles(company_name, email)",
         ),
     ]);
     setProducts((p as Product[]) ?? []);
@@ -114,20 +114,10 @@ const Admin = () => {
       ),
     );
 
-    const emailMap = new Map<string, string>();
-    if (userIds.length) {
-      const { data: emails } = await supabase.rpc("get_user_emails", {
-        _user_ids: userIds,
-      });
-      ((emails as any[]) ?? []).forEach((e) =>
-        emailMap.set(e.user_id, e.email),
-      );
-    }
-
     setOrders(
       orderRows.map((row: any) => ({
         ...row,
-        email: emailMap.get(row.user_id) ?? null,
+        email: row.profiles?.email ?? null,
         company_name: row.profiles?.company_name ?? null,
       })),
     );
@@ -146,7 +136,7 @@ const Admin = () => {
       grouped.get(key)!.buyers.push({
         user_id: row.user_id,
         company_name: row.profiles?.company_name ?? null,
-        email: emailMap.get(row.user_id) ?? null,
+        email: row.profiles?.email ?? null,
         created_at: row.created_at,
       });
     });
