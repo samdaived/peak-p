@@ -8,10 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/customSupabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { Trash2, Pencil, ChevronDown, ChevronRight, X } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { ORDER_STATUSES, ARCHIVED_ORDER_STATUSES } from '@/lib/translations';
+import { Trash2, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
 
 type Product = {
   id: string;
@@ -54,10 +57,10 @@ type FavoriteRow = {
   buyers: { user_id: string; company_name: string | null; email: string | null; created_at: string }[];
 };
 
-const ARCHIVED_STATUSES = new Set(['approved', 'cancelled', 'canceled', 'archived', 'completed', 'rejected']);
-
 const Admin = () => {
   const { signOut } = useAuth();
+  const { t, direction } = useLanguage();
+  const ta = t.admin;
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -132,8 +135,8 @@ const Admin = () => {
     const { error } = editingId
       ? await supabase.from('products').update(payload).eq('id', editingId)
       : await supabase.from('products').insert(payload);
-    if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    toast({ title: editingId ? 'Product updated' : 'Product added' });
+    if (error) return toast({ title: ta.error, description: error.message, variant: 'destructive' });
+    toast({ title: editingId ? ta.productUpdated : ta.productAdded });
     setForm(empty);
     setEditingId(null);
     load();
@@ -145,17 +148,16 @@ const Admin = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this product?')) return;
+    if (!confirm(ta.confirmDelete)) return;
     const { error } = await supabase.from('products').delete().eq('id', id);
-    if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    if (error) return toast({ title: ta.error, description: error.message, variant: 'destructive' });
     load();
   };
 
-  const handleCancelOrder = async (id: string) => {
-    if (!confirm('Cancel this order?')) return;
-    const { error } = await supabase.from('orders').update({ status: 'cancelled' }).eq('id', id);
-    if (error) return toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    toast({ title: 'Order cancelled' });
+  const handleStatusChange = async (id: string, status: string) => {
+    const { error } = await supabase.from('orders').update({ status }).eq('id', id);
+    if (error) return toast({ title: ta.error, description: error.message, variant: 'destructive' });
+    toast({ title: ta.statusUpdated });
     load();
   };
 
@@ -169,36 +171,35 @@ const Admin = () => {
 
   const handleSignOut = async () => { await signOut(); navigate('/'); };
 
-  const activeOrders = useMemo(() => orders.filter((o) => !ARCHIVED_STATUSES.has(o.status.toLowerCase())), [orders]);
-  const archivedOrders = useMemo(() => orders.filter((o) => ARCHIVED_STATUSES.has(o.status.toLowerCase())), [orders]);
+  const statusLabel = (s: string) => (t.status as any)[s.toLowerCase()] ?? s;
 
-  const renderOrdersTable = (rows: Order[], allowCancel: boolean) => {
+  const activeOrders = useMemo(() => orders.filter((o) => !ARCHIVED_ORDER_STATUSES.has(o.status.toLowerCase())), [orders]);
+  const archivedOrders = useMemo(() => orders.filter((o) => ARCHIVED_ORDER_STATUSES.has(o.status.toLowerCase())), [orders]);
+
+  const renderOrdersTable = (rows: Order[]) => {
     if (rows.length === 0) {
-      return <p className="text-sm text-muted-foreground">No orders.</p>;
+      return <p className="text-sm text-muted-foreground">{ta.noOrders}</p>;
     }
     return (
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-8"></TableHead>
-            <TableHead>Order #</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Updated</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead></TableHead>
+            <TableHead>{ta.orderNo}</TableHead>
+            <TableHead>{ta.created}</TableHead>
+            <TableHead>{ta.updated}</TableHead>
+            <TableHead>{ta.email}</TableHead>
+            <TableHead>{ta.phone}</TableHead>
+            <TableHead>{ta.status}</TableHead>
+            <TableHead className="text-right">{ta.total}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.map((o) => {
             const isOpen = expanded.has(o.id);
-            const canCancel = allowCancel && o.status.toLowerCase() === 'pending';
             return (
               <Fragment key={o.id}>
                 <TableRow className="cursor-pointer" onClick={() => toggleExpand(o.id)}>
-
                   <TableCell>
                     {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </TableCell>
@@ -207,53 +208,55 @@ const Admin = () => {
                   <TableCell className="text-xs">{new Date(o.updated_at).toLocaleString()}</TableCell>
                   <TableCell className="text-sm">{o.email ?? '—'}</TableCell>
                   <TableCell>{o.phone ?? '—'}</TableCell>
-                  <TableCell><Badge variant="secondary" className="capitalize">{o.status}</Badge></TableCell>
-                  <TableCell className="text-right font-semibold">{Number(o.total).toFixed(2)}</TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()} className="text-right">
-                    {canCancel && (
-                      <Button variant="ghost" size="sm" onClick={() => handleCancelOrder(o.id)}>
-                        <X className="h-4 w-4 mr-1" /> Cancel
-                      </Button>
-                    )}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Select value={o.status.toLowerCase()} onValueChange={(v) => handleStatusChange(o.id, v)}>
+                      <SelectTrigger className="h-8 w-[140px]"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {ORDER_STATUSES.map((s) => (
+                          <SelectItem key={s} value={s}>{statusLabel(s)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </TableCell>
+                  <TableCell className="text-right font-semibold">{Number(o.total).toFixed(2)}</TableCell>
                 </TableRow>
                 {isOpen && (
                   <TableRow className="bg-muted/30 hover:bg-muted/30">
                     <TableCell></TableCell>
-                    <TableCell colSpan={8}>
+                    <TableCell colSpan={7}>
                       <div className="space-y-4 py-2">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                           <div>
-                            <h4 className="font-semibold mb-1">Company</h4>
+                            <h4 className="font-semibold mb-1">{ta.company}</h4>
                             <div className="text-muted-foreground space-y-0.5">
                               <div>{o.company_name ?? '—'}</div>
                               <div>{o.email ?? '—'}</div>
-                              <div>Phone: {o.phone ?? '—'}</div>
-                              <div>Ship to: {o.shipping_address ?? '—'}</div>
+                              <div>{ta.phone}: {o.phone ?? '—'}</div>
+                              <div>{ta.shipTo}: {o.shipping_address ?? '—'}</div>
                             </div>
                           </div>
                           <div>
-                            <h4 className="font-semibold mb-1">Order</h4>
+                            <h4 className="font-semibold mb-1">{ta.order}</h4>
                             <div className="text-muted-foreground space-y-0.5">
                               <div>ID: <span className="font-mono">{o.id}</span></div>
-                              <div>Created: {new Date(o.created_at).toLocaleString()}</div>
-                              <div>Updated: {new Date(o.updated_at).toLocaleString()}</div>
-                              <div>Status: <span className="capitalize">{o.status}</span></div>
-                              {o.notes && <div>Notes: {o.notes}</div>}
+                              <div>{ta.created}: {new Date(o.created_at).toLocaleString()}</div>
+                              <div>{ta.updated}: {new Date(o.updated_at).toLocaleString()}</div>
+                              <div>{ta.status}: <span className="capitalize">{statusLabel(o.status)}</span></div>
+                              {o.notes && <div>{ta.notes}: {o.notes}</div>}
                             </div>
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-semibold mb-2 text-sm">Items</h4>
+                          <h4 className="font-semibold mb-2 text-sm">{ta.items}</h4>
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead>SKU</TableHead>
-                                <TableHead>Product</TableHead>
-                                <TableHead>Qty</TableHead>
-                                <TableHead>Needed by</TableHead>
-                                <TableHead className="text-right">Unit price</TableHead>
-                                <TableHead className="text-right">Subtotal</TableHead>
+                                <TableHead>{ta.sku}</TableHead>
+                                <TableHead>{ta.product}</TableHead>
+                                <TableHead>{ta.qty}</TableHead>
+                                <TableHead>{ta.neededBy}</TableHead>
+                                <TableHead className="text-right">{ta.unitPrice}</TableHead>
+                                <TableHead className="text-right">{ta.subtotal}</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -270,7 +273,7 @@ const Admin = () => {
                             </TableBody>
                           </Table>
                         </div>
-                        <div className="text-right font-bold">Total: {Number(o.total).toFixed(2)} MAD</div>
+                        <div className="text-right font-bold">{ta.total}: {Number(o.total).toFixed(2)} MAD</div>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -284,39 +287,39 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div dir={direction} className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Admin</h1>
-            <p className="text-sm text-muted-foreground">Manage products and view orders</p>
+            <h1 className="text-3xl font-bold">{ta.title}</h1>
+            <p className="text-sm text-muted-foreground">{ta.subtitle}</p>
           </div>
           <div className="flex gap-2">
-            <Link to="/"><Button variant="outline">Site</Button></Link>
-            <Button variant="outline" onClick={handleSignOut}>Sign out</Button>
+            <Link to="/"><Button variant="outline">{ta.site}</Button></Link>
+            <Button variant="outline" onClick={handleSignOut}>{ta.signOut}</Button>
           </div>
         </div>
 
         <Tabs defaultValue="products">
           <TabsList>
-            <TabsTrigger value="products">Products ({products.length})</TabsTrigger>
-            <TabsTrigger value="orders">Orders ({activeOrders.length})</TabsTrigger>
-            <TabsTrigger value="archive">Archive ({archivedOrders.length})</TabsTrigger>
-            <TabsTrigger value="favorites">Favorites ({favorites.length})</TabsTrigger>
+            <TabsTrigger value="products">{ta.products} ({products.length})</TabsTrigger>
+            <TabsTrigger value="orders">{ta.orders} ({activeOrders.length})</TabsTrigger>
+            <TabsTrigger value="archive">{ta.archive} ({archivedOrders.length})</TabsTrigger>
+            <TabsTrigger value="favorites">{ta.favorites} ({favorites.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
             <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">{editingId ? 'Edit product' : 'Add product'}</h2>
+              <h2 className="text-lg font-semibold mb-4">{editingId ? ta.editProduct : ta.addProduct}</h2>
               <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>SKU</Label><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} required /></div>
-                <div className="space-y-2"><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></div>
-                <div className="space-y-2"><Label>Category</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
-                <div className="space-y-2"><Label>Price (MAD)</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required /></div>
-                <div className="space-y-2 md:col-span-2"><Label>Description</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+                <div className="space-y-2"><Label>{ta.sku}</Label><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} required /></div>
+                <div className="space-y-2"><Label>{ta.name}</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></div>
+                <div className="space-y-2"><Label>{ta.category}</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></div>
+                <div className="space-y-2"><Label>{ta.pricemad}</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required /></div>
+                <div className="space-y-2 md:col-span-2"><Label>{ta.description}</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
                 <div className="md:col-span-2 flex gap-2">
-                  <Button type="submit">{editingId ? 'Save' : 'Add'}</Button>
-                  {editingId && <Button type="button" variant="ghost" onClick={() => { setEditingId(null); setForm(empty); }}>Cancel</Button>}
+                  <Button type="submit">{editingId ? ta.save : ta.add}</Button>
+                  {editingId && <Button type="button" variant="ghost" onClick={() => { setEditingId(null); setForm(empty); }}>{ta.cancel}</Button>}
                 </div>
               </form>
             </Card>
@@ -325,10 +328,10 @@ const Admin = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
+                    <TableHead>{ta.sku}</TableHead>
+                    <TableHead>{ta.name}</TableHead>
+                    <TableHead>{ta.category}</TableHead>
+                    <TableHead className="text-right">{ta.pricemad}</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -352,28 +355,28 @@ const Admin = () => {
 
           <TabsContent value="orders">
             <Card className="p-6 overflow-x-auto">
-              {renderOrdersTable(activeOrders, true)}
+              {renderOrdersTable(activeOrders)}
             </Card>
           </TabsContent>
 
           <TabsContent value="archive">
             <Card className="p-6 overflow-x-auto">
-              {renderOrdersTable(archivedOrders, false)}
+              {renderOrdersTable(archivedOrders)}
             </Card>
           </TabsContent>
 
           <TabsContent value="favorites">
             <Card className="p-6 overflow-x-auto">
               {favorites.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No favorites yet.</p>
+                <p className="text-sm text-muted-foreground">{ta.noFavorites}</p>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>SKU</TableHead>
-                      <TableHead>Product</TableHead>
-                      <TableHead className="text-right">Favorited by</TableHead>
-                      <TableHead>Buyers</TableHead>
+                      <TableHead>{ta.sku}</TableHead>
+                      <TableHead>{ta.product}</TableHead>
+                      <TableHead className="text-right">{ta.favoritedBy}</TableHead>
+                      <TableHead>{ta.buyers}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
