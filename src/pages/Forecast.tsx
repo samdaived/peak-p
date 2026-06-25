@@ -161,8 +161,11 @@ const Forecast = () => {
             {submitting ? tf.submitting : tf.submit}
           </Button>
         </div>
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
+
   );
 };
 
