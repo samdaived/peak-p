@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { LogOut, Heart, ShoppingCart, X, ListOrdered } from 'lucide-react';
+import { Heart, ShoppingCart, X, ListOrdered } from 'lucide-react';
 import { supabase, callEdgeFunction } from '@/lib/customSupabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -26,7 +26,7 @@ type CartLine = { product: Product; quantity: number; date_needed: string };
 
 const Prices = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { t, direction } = useLanguage();
   const tp = t.prices;
 
@@ -147,7 +147,7 @@ const Prices = () => {
     navigate('/orders');
   };
 
-  const handleLogout = async () => { await signOut(); navigate('/login', { replace: true }); };
+  
 
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => {
@@ -174,10 +174,8 @@ const Prices = () => {
               <Button onClick={() => setShowCart((s) => !s)}>
                 <ShoppingCart className="h-4 w-4 mr-2" /> {tp.cart} ({cartItems.length})
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" /> {tp.logout}
-              </Button>
             </div>
+
           </div>
 
           {showCart && (
