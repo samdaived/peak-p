@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,14 +6,15 @@ import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/customSupabase';
-import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ORDER_STATUSES, ARCHIVED_ORDER_STATUSES } from '@/lib/translations';
 import { Trash2, Pencil, ChevronDown, ChevronRight } from 'lucide-react';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+
 
 type Product = {
   id: string;
@@ -58,10 +58,9 @@ type FavoriteRow = {
 };
 
 const Admin = () => {
-  const { signOut } = useAuth();
   const { t, direction } = useLanguage();
   const ta = t.admin;
-  const navigate = useNavigate();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [favorites, setFavorites] = useState<FavoriteRow[]>([]);
@@ -169,7 +168,7 @@ const Admin = () => {
     });
   };
 
-  const handleSignOut = async () => { await signOut(); navigate('/'); };
+  
 
   const statusLabel = (s: string) => (t.status as any)[s.toLowerCase()] ?? s;
 
@@ -287,18 +286,15 @@ const Admin = () => {
   };
 
   return (
-    <div dir={direction} className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
+    <div dir={direction} className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <main className="flex-1 p-4 md:p-8 pt-24 md:pt-28">
+        <div className="max-w-6xl mx-auto space-y-8">
           <div>
             <h1 className="text-3xl font-bold">{ta.title}</h1>
             <p className="text-sm text-muted-foreground">{ta.subtitle}</p>
           </div>
-          <div className="flex gap-2">
-            <Link to="/"><Button variant="outline">{ta.site}</Button></Link>
-            <Button variant="outline" onClick={handleSignOut}>{ta.signOut}</Button>
-          </div>
-        </div>
+
 
         <Tabs defaultValue="products">
           <TabsList>
@@ -396,8 +392,11 @@ const Admin = () => {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+        </div>
+      </main>
+      <Footer />
     </div>
+
   );
 };
 

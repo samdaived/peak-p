@@ -12,7 +12,7 @@ import { supabase } from '@/lib/customSupabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ARCHIVED_ORDER_STATUSES } from '@/lib/translations';
-import { X } from 'lucide-react';
+
 
 type OrderItem = {
   id: string;
@@ -57,20 +57,14 @@ const Orders = () => {
 
   const statusLabel = (s: string) => (t.status as any)[s.toLowerCase()] ?? s;
 
-  const handleCancel = async (id: string) => {
-    if (!confirm(o.confirmCancel)) return;
-    const { error } = await supabase.from('orders').update({ status: 'cancelled' }).eq('id', id);
-    if (error) return toast({ title: o.error, description: error.message, variant: 'destructive' });
-    toast({ title: o.cancelled });
-    load();
-  };
 
-  const renderOrders = (list: Order[], allowCancel: boolean) => {
+
+
+  const renderOrders = (list: Order[]) => {
     if (list.length === 0) {
       return <Card className="p-8 text-center text-muted-foreground">{o.empty}</Card>;
     }
     return list.map((row) => {
-      const canCancel = allowCancel && !ARCHIVED_ORDER_STATUSES.has(row.status.toLowerCase());
       return (
         <Card key={row.id} className="p-6 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -81,13 +75,9 @@ const Orders = () => {
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="capitalize">{statusLabel(row.status)}</Badge>
-              {canCancel && (
-                <Button variant="outline" size="sm" onClick={() => handleCancel(row.id)}>
-                  <X className="h-4 w-4 mr-1" /> {o.cancel}
-                </Button>
-              )}
             </div>
           </div>
+
 
           <Table>
             <TableHeader>
@@ -138,11 +128,12 @@ const Orders = () => {
               <TabsTrigger value="archive">{o.archive} ({archivedOrders.length})</TabsTrigger>
             </TabsList>
             <TabsContent value="active" className="space-y-4">
-              {renderOrders(activeOrders, true)}
+              {renderOrders(activeOrders)}
             </TabsContent>
             <TabsContent value="archive" className="space-y-4">
-              {renderOrders(archivedOrders, false)}
+              {renderOrders(archivedOrders)}
             </TabsContent>
+
           </Tabs>
         </div>
       </main>

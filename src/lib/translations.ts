@@ -7,7 +7,9 @@ export const translations = {
       products: 'Produits',
       about: 'À Propos',
       contact: 'Contact',
+      admin: 'Admin',
     },
+
     hero: {
       tagline: 'Votre Partenaire Santé',
       title: 'Nutrition de Qualité Premium',
@@ -61,10 +63,13 @@ export const translations = {
     },
     status: {
       submitted: 'Soumise',
-      in_progress: 'En cours',
-      completed: 'Terminée',
-      cancelled: 'Annulée',
+      approved: 'Approuvée',
+      ordered: 'Commandée',
+      received: 'Reçue',
+      delivered: 'Livrée',
+      closed: 'Clôturée',
     },
+
     login: {
       title: 'Portail Acheteur',
       subtitle: 'Peak Nutrition',
@@ -194,7 +199,9 @@ export const translations = {
       products: 'المنتجات',
       about: 'من نحن',
       contact: 'اتصل بنا',
+      admin: 'الإدارة',
     },
+
     hero: {
       tagline: 'شريكك في الصحة',
       title: 'تغذية عالية الجودة',
@@ -248,10 +255,13 @@ export const translations = {
     },
     status: {
       submitted: 'مُقدَّمة',
-      in_progress: 'قيد التنفيذ',
-      completed: 'مكتملة',
-      cancelled: 'ملغاة',
+      approved: 'موافق عليها',
+      ordered: 'تم الطلب',
+      received: 'تم الاستلام',
+      delivered: 'تم التسليم',
+      closed: 'مغلقة',
     },
+
     login: {
       title: 'بوابة المشتري',
       subtitle: 'بيك نيوتريشن',
@@ -381,7 +391,9 @@ export const translations = {
       products: 'Products',
       about: 'About',
       contact: 'Contact',
+      admin: 'Admin',
     },
+
     hero: {
       tagline: 'Your Health Partner',
       title: 'Premium Quality Nutrition',
@@ -435,10 +447,13 @@ export const translations = {
     },
     status: {
       submitted: 'Submitted',
-      in_progress: 'In Progress',
-      completed: 'Completed',
-      cancelled: 'Cancelled',
+      approved: 'Approved',
+      ordered: 'Ordered',
+      received: 'Received',
+      delivered: 'Delivered',
+      closed: 'Closed',
     },
+
     login: {
       title: 'Buyer Portal',
       subtitle: 'Peak Nutrition Health & Wellness',
@@ -568,6 +583,7 @@ export const getDirection = (lang: Language): 'ltr' | 'rtl' => {
   return lang === 'ar' ? 'rtl' : 'ltr';
 };
 
-export const ORDER_STATUSES = ['submitted', 'in_progress', 'completed', 'cancelled'] as const;
+export const ORDER_STATUSES = ['submitted', 'approved', 'ordered', 'received', 'delivered', 'closed'] as const;
 export type OrderStatus = typeof ORDER_STATUSES[number];
-export const ARCHIVED_ORDER_STATUSES = new Set<string>(['completed', 'cancelled']);
+export const ARCHIVED_ORDER_STATUSES = new Set<string>(['delivered', 'closed']);
+
