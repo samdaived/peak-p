@@ -1,3 +1,5 @@
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,14 +21,12 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/customSupabase";
 import { ARCHIVED_ORDER_STATUSES, ORDER_STATUSES } from "@/lib/translations";
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 
 type Product = {
   id: string;
@@ -75,10 +75,9 @@ type FavoriteRow = {
 };
 
 const Admin = () => {
-  const { signOut } = useAuth();
   const { t, direction } = useLanguage();
   const ta = t.admin;
-  const navigate = useNavigate();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [favorites, setFavorites] = useState<FavoriteRow[]>([]);
@@ -219,11 +218,6 @@ const Admin = () => {
       else next.add(id);
       return next;
     });
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
   };
 
   const statusLabel = (s: string) => (t.status as any)[s.toLowerCase()] ?? s;
@@ -419,220 +413,222 @@ const Admin = () => {
   };
 
   return (
-    <div dir={direction} className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
+    <div dir={direction} className="min-h-screen bg-background flex flex-col">
+      <Header />
+      <main className="flex-1 p-4 md:p-8 pt-24 md:pt-28">
+        <div className="max-w-6xl mx-auto space-y-8">
           <div>
             <h1 className="text-3xl font-bold">{ta.title}</h1>
             <p className="text-sm text-muted-foreground">{ta.subtitle}</p>
           </div>
-          <div className="flex gap-2">
-            <Link to="/">
-              <Button variant="outline">{ta.site}</Button>
-            </Link>
-            <Button variant="outline" onClick={handleSignOut}>
-              {ta.signOut}
-            </Button>
-          </div>
-        </div>
 
-        <Tabs defaultValue="products">
-          <TabsList>
-            <TabsTrigger value="products">
-              {ta.products} ({products.length})
-            </TabsTrigger>
-            <TabsTrigger value="orders">
-              {ta.orders} ({activeOrders.length})
-            </TabsTrigger>
-            <TabsTrigger value="archive">
-              {ta.archive} ({archivedOrders.length})
-            </TabsTrigger>
-            <TabsTrigger value="favorites">
-              {ta.favorites} ({favorites.length})
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="products">
+            <TabsList>
+              <TabsTrigger value="products">
+                {ta.products} ({products.length})
+              </TabsTrigger>
+              <TabsTrigger value="orders">
+                {ta.orders} ({activeOrders.length})
+              </TabsTrigger>
+              <TabsTrigger value="archive">
+                {ta.archive} ({archivedOrders.length})
+              </TabsTrigger>
+              <TabsTrigger value="favorites">
+                {ta.favorites} ({favorites.length})
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="products" className="space-y-6">
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">
-                {editingId ? ta.editProduct : ta.addProduct}
-              </h2>
-              <form
-                onSubmit={handleSubmit}
-                className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              >
-                <div className="space-y-2">
-                  <Label>{ta.sku}</Label>
-                  <Input
-                    value={form.sku}
-                    onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{ta.name}</Label>
-                  <Input
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{ta.category}</Label>
-                  <Input
-                    value={form.category}
-                    onChange={(e) =>
-                      setForm({ ...form, category: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>{ta.pricemad}</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={form.price}
-                    onChange={(e) =>
-                      setForm({ ...form, price: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label>{ta.description}</Label>
-                  <Textarea
-                    value={form.description}
-                    onChange={(e) =>
-                      setForm({ ...form, description: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="md:col-span-2 flex gap-2">
-                  <Button type="submit">{editingId ? ta.save : ta.add}</Button>
-                  {editingId && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => {
-                        setEditingId(null);
-                        setForm(empty);
-                      }}
-                    >
-                      {ta.cancel}
+            <TabsContent value="products" className="space-y-6">
+              <Card className="p-6">
+                <h2 className="text-lg font-semibold mb-4">
+                  {editingId ? ta.editProduct : ta.addProduct}
+                </h2>
+                <form
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                >
+                  <div className="space-y-2">
+                    <Label>{ta.sku}</Label>
+                    <Input
+                      value={form.sku}
+                      onChange={(e) =>
+                        setForm({ ...form, sku: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{ta.name}</Label>
+                    <Input
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{ta.category}</Label>
+                    <Input
+                      value={form.category}
+                      onChange={(e) =>
+                        setForm({ ...form, category: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{ta.pricemad}</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={form.price}
+                      onChange={(e) =>
+                        setForm({ ...form, price: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>{ta.description}</Label>
+                    <Textarea
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm({ ...form, description: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="md:col-span-2 flex gap-2">
+                    <Button type="submit">
+                      {editingId ? ta.save : ta.add}
                     </Button>
-                  )}
-                </div>
-              </form>
-            </Card>
+                    {editingId && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingId(null);
+                          setForm(empty);
+                        }}
+                      >
+                        {ta.cancel}
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </Card>
 
-            <Card className="p-6 overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{ta.sku}</TableHead>
-                    <TableHead>{ta.name}</TableHead>
-                    <TableHead>{ta.category}</TableHead>
-                    <TableHead className="text-right">{ta.pricemad}</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((p) => (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-mono text-xs">
-                        {p.sku}
-                      </TableCell>
-                      <TableCell>{p.name}</TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {p.category}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">
-                        {Number(p.price).toFixed(2)}
-                      </TableCell>
-                      <TableCell className="flex gap-1 justify-end">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(p)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(p.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="orders">
-            <Card className="p-6 overflow-x-auto">
-              {renderOrdersTable(activeOrders)}
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="archive">
-            <Card className="p-6 overflow-x-auto">
-              {renderOrdersTable(archivedOrders)}
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="favorites">
-            <Card className="p-6 overflow-x-auto">
-              {favorites.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  {ta.noFavorites}
-                </p>
-              ) : (
+              <Card className="p-6 overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>{ta.sku}</TableHead>
-                      <TableHead>{ta.product}</TableHead>
+                      <TableHead>{ta.name}</TableHead>
+                      <TableHead>{ta.category}</TableHead>
                       <TableHead className="text-right">
-                        {ta.favoritedBy}
+                        {ta.pricemad}
                       </TableHead>
-                      <TableHead>{ta.buyers}</TableHead>
+                      <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {favorites.map((f) => (
-                      <TableRow key={f.product_id}>
+                    {products.map((p) => (
+                      <TableRow key={p.id}>
                         <TableCell className="font-mono text-xs">
-                          {f.product_sku}
+                          {p.sku}
                         </TableCell>
-                        <TableCell className="font-medium">
-                          {f.product_name}
+                        <TableCell>{p.name}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {p.category}
                         </TableCell>
                         <TableCell className="text-right font-semibold">
-                          {f.buyers.length}
+                          {Number(p.price).toFixed(2)}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {f.buyers
-                            .map(
-                              (b) =>
-                                b.email ||
-                                b.company_name ||
-                                b.user_id.slice(0, 8),
-                            )
-                            .join(", ")}
+                        <TableCell className="flex gap-1 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(p)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(p.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              )}
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="orders">
+              <Card className="p-6 overflow-x-auto">
+                {renderOrdersTable(activeOrders)}
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="archive">
+              <Card className="p-6 overflow-x-auto">
+                {renderOrdersTable(archivedOrders)}
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="favorites">
+              <Card className="p-6 overflow-x-auto">
+                {favorites.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    {ta.noFavorites}
+                  </p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{ta.sku}</TableHead>
+                        <TableHead>{ta.product}</TableHead>
+                        <TableHead className="text-right">
+                          {ta.favoritedBy}
+                        </TableHead>
+                        <TableHead>{ta.buyers}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {favorites.map((f) => (
+                        <TableRow key={f.product_id}>
+                          <TableCell className="font-mono text-xs">
+                            {f.product_sku}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {f.product_name}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold">
+                            {f.buyers.length}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {f.buyers
+                              .map(
+                                (b) =>
+                                  b.email ||
+                                  b.company_name ||
+                                  b.user_id.slice(0, 8),
+                              )
+                              .join(", ")}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

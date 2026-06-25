@@ -17,7 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/customSupabase";
-import { Heart, ListOrdered, LogOut, ShoppingCart, X } from "lucide-react";
+import { Heart, ListOrdered, ShoppingCart, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -33,7 +33,7 @@ type CartLine = { product: Product; quantity: number; date_needed: string };
 
 const Prices = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { t, direction } = useLanguage();
   const tp = t.prices;
 
@@ -200,11 +200,6 @@ const Prices = () => {
     navigate("/orders");
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/login", { replace: true });
-  };
-
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => {
       const af = favorites.has(a.id) ? 0 : 1;
@@ -230,9 +225,6 @@ const Prices = () => {
               <Button onClick={() => setShowCart((s) => !s)}>
                 <ShoppingCart className="h-4 w-4 mr-2" /> {tp.cart} (
                 {cartItems.length})
-              </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" /> {tp.logout}
               </Button>
             </div>
           </div>
