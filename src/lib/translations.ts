@@ -7,7 +7,9 @@ export const translations = {
       products: 'Produits',
       about: 'À Propos',
       contact: 'Contact',
+      admin: 'Admin',
     },
+
     hero: {
       tagline: 'Votre Partenaire Santé',
       title: 'Nutrition de Qualité Premium',
@@ -197,7 +199,9 @@ export const translations = {
       products: 'المنتجات',
       about: 'من نحن',
       contact: 'اتصل بنا',
+      admin: 'الإدارة',
     },
+
     hero: {
       tagline: 'شريكك في الصحة',
       title: 'تغذية عالية الجودة',
@@ -387,7 +391,9 @@ export const translations = {
       products: 'Products',
       about: 'About',
       contact: 'Contact',
+      admin: 'Admin',
     },
+
     hero: {
       tagline: 'Your Health Partner',
       title: 'Premium Quality Nutrition',
