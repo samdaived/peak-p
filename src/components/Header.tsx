@@ -22,6 +22,7 @@ export const Header = () => {
     { label: t.nav.about, href: '/#about', internal: false },
     { label: t.nav.contact, href: '/#contact', internal: false },
     { label: pricesLabel, href: '/prices', internal: true },
+    ...(user ? [{ label: (t.nav as any).profile ?? 'Profile', href: '/profile', internal: true }] : []),
     ...(isAdmin ? [{ label: (t.nav as any).admin ?? 'Admin', href: '/admin', internal: true }] : []),
   ];
 
