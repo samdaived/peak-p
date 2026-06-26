@@ -194,6 +194,15 @@ const Prices = () => {
 
           </div>
 
+          {!profileComplete && (
+            <Card className="p-4 flex flex-wrap items-center justify-between gap-3 border-destructive/50 bg-destructive/5">
+              <p className="text-sm">{(tp as any).profileIncomplete}</p>
+              <Button size="sm" onClick={() => navigate('/profile?redirect=/prices')}>
+                {(tp as any).completeProfile}
+              </Button>
+            </Card>
+          )}
+
           {showCart && (
             <Card className="p-6 space-y-4">
               <h2 className="text-lg font-semibold">{tp.yourOrder}</h2>
@@ -206,7 +215,7 @@ const Prices = () => {
                       <TableRow>
                         <TableHead>{tp.product}</TableHead>
                         <TableHead>{tp.quantity}</TableHead>
-                        <TableHead>{tp.dateNeeded}</TableHead>
+                        <TableHead>{tp.dateNeeded} *</TableHead>
                         <TableHead className="text-right">{tp.subtotal}</TableHead>
                         <TableHead></TableHead>
                       </TableRow>
@@ -216,17 +225,24 @@ const Prices = () => {
                         <TableRow key={l.product.id}>
                           <TableCell>{l.product.name}</TableCell>
                           <TableCell>
-                            <Input
-                              type="number"
-                              min={1}
-                              value={l.quantity}
-                              onChange={(e) => updateLine(l.product.id, { quantity: Math.max(1, Number(e.target.value)) })}
-                              className="w-24"
-                            />
+                            <div className="flex items-center gap-1">
+                              <Input
+                                type="number"
+                                min={1000}
+                                step={1000}
+                                value={l.quantity}
+                                onChange={(e) => updateLine(l.product.id, { quantity: Math.max(1000, Number(e.target.value) || 1000) })}
+                                className="w-28"
+                              />
+                              <span className="text-sm text-muted-foreground">
+                                ({(l.quantity / 1000).toLocaleString()}k)
+                              </span>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Input
                               type="date"
+                              required
                               value={l.date_needed}
                               onChange={(e) => updateLine(l.product.id, { date_needed: e.target.value })}
                               className="w-44"
@@ -245,12 +261,12 @@ const Prices = () => {
 
                   <div className="grid md:grid-cols-3 gap-4 pt-4 border-t">
                     <div className="space-y-2">
-                      <Label>{tp.phone}</Label>
-                      <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+                      <Label>{tp.phone} *</Label>
+                      <Input value={phone} disabled />
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                      <Label>{tp.shippingAddress}</Label>
-                      <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+                      <Label>{(tp as any).deliveryAddress} *</Label>
+                      <Input value={address} disabled />
                     </div>
                     <div className="space-y-2 md:col-span-3">
                       <Label>{tp.notes}</Label>
@@ -260,7 +276,7 @@ const Prices = () => {
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="text-lg font-bold">{tp.total}: {cartTotal.toFixed(2)} MAD</div>
-                    <Button onClick={submitOrder} disabled={submitting}>
+                    <Button onClick={submitOrder} disabled={submitting || !profileComplete}>
                       {submitting ? tp.placing : tp.placeOrder}
                     </Button>
                   </div>
