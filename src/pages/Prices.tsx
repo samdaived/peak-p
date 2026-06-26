@@ -36,13 +36,15 @@ const Prices = () => {
   const [showCart, setShowCart] = useState(false);
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [ice, setIce] = useState('');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const profileComplete = !!(companyName.trim() && ice.trim() && phone.trim() && address.trim());
+
   useEffect(() => {
     const load = async () => {
-      // Products come from your custom Supabase edge function.
-      // The function should return either an array of products or { products: Product[] }.
       const { data, error } = await callEdgeFunction<Product[] | { products: Product[] }>(
         'database-access',
       );
@@ -54,14 +56,15 @@ const Prices = () => {
       }
 
       if (user) {
-        // TODO: replace with your own edge function once it's ready.
         try {
           const { data: favs } = await supabase.from('favorites').select('product_id').eq('user_id', user.id);
           setFavorites(new Set((favs ?? []).map((f: any) => f.product_id)));
-          const { data: profile } = await supabase.from('profiles').select('phone, shipping_address').eq('id', user.id).maybeSingle();
+          const { data: profile } = await supabase.from('profiles').select('phone, shipping_address, company_name, ice').eq('id', user.id).maybeSingle();
           if (profile) {
-            setPhone(profile.phone ?? '');
-            setAddress(profile.shipping_address ?? '');
+            setPhone((profile as any).phone ?? '');
+            setAddress((profile as any).shipping_address ?? '');
+            setCompanyName((profile as any).company_name ?? '');
+            setIce((profile as any).ice ?? '');
           }
         } catch {
           /* tables not created yet — ignore */
@@ -87,8 +90,8 @@ const Prices = () => {
     setCart((c) => ({
       ...c,
       [p.id]: c[p.id]
-        ? { ...c[p.id], quantity: c[p.id].quantity + 1 }
-        : { product: p, quantity: 1, date_needed: '' },
+        ? { ...c[p.id], quantity: c[p.id].quantity + 1000 }
+        : { product: p, quantity: 1000, date_needed: '' },
     }));
     toast({ title: `${p.name} ${tp.added}` });
   };
@@ -109,6 +112,19 @@ const Prices = () => {
 
   const submitOrder = async () => {
     if (!user || cartItems.length === 0) return;
+    if (!profileComplete) {
+      toast({ title: (tp as any).profileIncomplete, variant: 'destructive' });
+      navigate('/profile?redirect=/prices');
+      return;
+    }
+    if (cartItems.some((l) => !l.date_needed)) {
+      toast({ title: (t.orders as any).neededBy + ' *', variant: 'destructive' });
+      return;
+    }
+    if (cartItems.some((l) => l.quantity < 1000)) {
+      toast({ title: (tp as any).minQty, variant: 'destructive' });
+      return;
+    }
     setSubmitting(true);
     const { data: order, error: orderErr } = await supabase
       .from('orders')
@@ -178,6 +194,15 @@ const Prices = () => {
 
           </div>
 
+          {!profileComplete && (
+            <Card className="p-4 flex flex-wrap items-center justify-between gap-3 border-destructive/50 bg-destructive/5">
+              <p className="text-sm">{(tp as any).profileIncomplete}</p>
+              <Button size="sm" onClick={() => navigate('/profile?redirect=/prices')}>
+                {(tp as any).completeProfile}
+              </Button>
+            </Card>
+          )}
+
           {showCart && (
             <Card className="p-6 space-y-4">
               <h2 className="text-lg font-semibold">{tp.yourOrder}</h2>
@@ -190,7 +215,7 @@ const Prices = () => {
                       <TableRow>
                         <TableHead>{tp.product}</TableHead>
                         <TableHead>{tp.quantity}</TableHead>
-                        <TableHead>{tp.dateNeeded}</TableHead>
+                        <TableHead>{tp.dateNeeded} *</TableHead>
                         <TableHead className="text-right">{tp.subtotal}</TableHead>
                         <TableHead></TableHead>
                       </TableRow>
@@ -200,17 +225,24 @@ const Prices = () => {
                         <TableRow key={l.product.id}>
                           <TableCell>{l.product.name}</TableCell>
                           <TableCell>
-                            <Input
-                              type="number"
-                              min={1}
-                              value={l.quantity}
-                              onChange={(e) => updateLine(l.product.id, { quantity: Math.max(1, Number(e.target.value)) })}
-                              className="w-24"
-                            />
+                            <div className="flex items-center gap-1">
+                              <Input
+                                type="number"
+                                min={1000}
+                                step={1000}
+                                value={l.quantity}
+                                onChange={(e) => updateLine(l.product.id, { quantity: Math.max(1000, Number(e.target.value) || 1000) })}
+                                className="w-28"
+                              />
+                              <span className="text-sm text-muted-foreground">
+                                ({(l.quantity / 1000).toLocaleString()}k)
+                              </span>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <Input
                               type="date"
+                              required
                               value={l.date_needed}
                               onChange={(e) => updateLine(l.product.id, { date_needed: e.target.value })}
                               className="w-44"
@@ -229,12 +261,12 @@ const Prices = () => {
 
                   <div className="grid md:grid-cols-3 gap-4 pt-4 border-t">
                     <div className="space-y-2">
-                      <Label>{tp.phone}</Label>
-                      <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+                      <Label>{tp.phone} *</Label>
+                      <Input value={phone} disabled />
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                      <Label>{tp.shippingAddress}</Label>
-                      <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+                      <Label>{(tp as any).deliveryAddress} *</Label>
+                      <Input value={address} disabled />
                     </div>
                     <div className="space-y-2 md:col-span-3">
                       <Label>{tp.notes}</Label>
@@ -244,7 +276,7 @@ const Prices = () => {
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="text-lg font-bold">{tp.total}: {cartTotal.toFixed(2)} MAD</div>
-                    <Button onClick={submitOrder} disabled={submitting}>
+                    <Button onClick={submitOrder} disabled={submitting || !profileComplete}>
                       {submitting ? tp.placing : tp.placeOrder}
                     </Button>
                   </div>
