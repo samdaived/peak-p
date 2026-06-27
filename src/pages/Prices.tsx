@@ -41,18 +41,28 @@ const Prices = () => {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [cart, setCart] = useState<Record<string, CartLine>>({});
   const [showCart, setShowCart] = useState(false);
+  const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [ice, setIce] = useState("");
+  const [rc, setRc] = useState("");
+  const [city, setCity] = useState("");
+  const [companyPhone, setCompanyPhone] = useState("");
+  const [officeAddress, setOfficeAddress] = useState("");
+  const [storageOffice, setStorageOffice] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const profileComplete = !!(
+    fullName.trim() &&
+    phone.trim() &&
     companyName.trim() &&
     ice.trim() &&
-    phone.trim() &&
-    address.trim()
+    rc.trim() &&
+    city.trim() &&
+    companyPhone.trim() &&
+    officeAddress.trim() &&
+    storageOffice.trim()
   );
 
   useEffect(() => {
@@ -78,14 +88,29 @@ const Prices = () => {
           setFavorites(new Set((favs ?? []).map((f: any) => f.product_id)));
           const { data: profile } = await supabase
             .from("profiles")
-            .select("phone, shipping_address, company_name, ice")
+            .select("full_name, phone, company")
             .eq("id", user.id)
             .maybeSingle();
           if (profile) {
+            setFullName((profile as any).full_name ?? "");
             setPhone((profile as any).phone ?? "");
-            setAddress((profile as any).shipping_address ?? "");
-            setCompanyName((profile as any).company_name ?? "");
-            setIce((profile as any).ice ?? "");
+            const cid = (profile as any).company as string | null;
+            if (cid) {
+              const { data: company } = await supabase
+                .from("companies")
+                .select("name, ice, rc, city, phone, office_address, storage_office")
+                .eq("id", cid)
+                .maybeSingle();
+              if (company) {
+                setCompanyName((company as any).name ?? "");
+                setIce((company as any).ice ?? "");
+                setRc((company as any).rc ?? "");
+                setCity((company as any).city ?? "");
+                setCompanyPhone((company as any).phone ?? "");
+                setOfficeAddress((company as any).office_address ?? "");
+                setStorageOffice((company as any).storage_office ?? "");
+              }
+            }
           }
         } catch {
           /* tables not created yet — ignore */
@@ -172,7 +197,7 @@ const Prices = () => {
       .from("orders")
       .insert({
         user_id: user.id,
-        shipping_address: address || null,
+        shipping_address: officeAddress || null,
         phone: phone || null,
         notes: notes || null,
         total: cartTotal,
@@ -206,10 +231,10 @@ const Prices = () => {
         variant: "destructive",
       });
 
-    // persist profile defaults
+    // refresh profile defaults (phone/full_name kept in sync)
     await supabase
       .from("profiles")
-      .upsert({ id: user.id, phone, shipping_address: address });
+      .upsert({ id: user.id, full_name: fullName, phone });
 
     toast({
       title: tp.orderPlaced,
@@ -339,12 +364,20 @@ const Prices = () => {
 
                   <div className="grid md:grid-cols-3 gap-4 pt-4 border-t">
                     <div className="space-y-2">
-                      <Label>{tp.phone} *</Label>
+                      <Label>{(t as any).profile.fullName}</Label>
+                      <Input value={fullName} disabled />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{tp.phone}</Label>
                       <Input value={phone} disabled />
                     </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label>{(tp as any).deliveryAddress} *</Label>
-                      <Input value={address} disabled />
+                    <div className="space-y-2">
+                      <Label>{(t as any).profile.companyName}</Label>
+                      <Input value={companyName} disabled />
+                    </div>
+                    <div className="space-y-2 md:col-span-3">
+                      <Label>{(tp as any).deliveryAddress}</Label>
+                      <Input value={officeAddress} disabled />
                     </div>
                     <div className="space-y-2 md:col-span-3">
                       <Label>{tp.notes}</Label>
@@ -354,6 +387,7 @@ const Prices = () => {
                       />
                     </div>
                   </div>
+
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="text-lg font-bold">
