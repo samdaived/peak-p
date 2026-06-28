@@ -98,7 +98,9 @@ const Prices = () => {
             if (cid) {
               const { data: company } = await supabase
                 .from("companies")
-                .select("name, ice, rc, city, phone, office_address, storage_office")
+                .select(
+                  "name, ice, rc, city, phone, office_address, storage_office",
+                )
                 .eq("id", cid)
                 .maybeSingle();
               if (company) {
@@ -319,10 +321,7 @@ const Prices = () => {
                                 value={l.quantity}
                                 onChange={(e) =>
                                   updateLine(l.product.id, {
-                                    quantity: Math.max(
-                                      1000,
-                                      Number(e.target.value) || 1000,
-                                    ),
+                                    quantity: Number(e.target.value),
                                   })
                                 }
                                 className="w-28"
@@ -387,7 +386,6 @@ const Prices = () => {
                       />
                     </div>
                   </div>
-
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div className="text-lg font-bold">
