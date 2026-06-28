@@ -1,3 +1,4 @@
+import { AdminUsers } from "@/components/AdminUsers";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,6 @@ import { supabase } from "@/lib/customSupabase";
 import { ARCHIVED_ORDER_STATUSES, ORDER_STATUSES } from "@/lib/translations";
 import { ChevronDown, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { AdminUsers } from "@/components/AdminUsers";
 
 type Product = {
   id: string;
@@ -92,13 +92,13 @@ const Admin = () => {
       supabase
         .from("orders")
         .select(
-          "*, order_items(*, products(name, sku)), profiles(company_name,email)",
+          "*, order_items(*, products(name, sku)), profiles!orders_user_id_fkey1(company(name),email)",
         )
         .order("created_at", { ascending: false }),
       supabase
         .from("favorites")
         .select(
-          "user_id, product_id, created_at, products(name, sku), profiles(company_name, email)",
+          "user_id, product_id, created_at, products(name, sku), profiles(company(name), email)",
         ),
     ]);
     setProducts((p as Product[]) ?? []);
@@ -437,9 +437,7 @@ const Admin = () => {
               <TabsTrigger value="favorites">
                 {ta.favorites} ({favorites.length})
               </TabsTrigger>
-              <TabsTrigger value="users">
-                {ta.users ?? "Users"}
-              </TabsTrigger>
+              <TabsTrigger value="users">{ta.users ?? "Users"}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="products" className="space-y-6">
