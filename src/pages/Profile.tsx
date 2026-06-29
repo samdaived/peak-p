@@ -342,7 +342,7 @@ const Profile = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label>{tp.rc} *</Label>
+                <Label>{tp.rc}</Label>
                 <Input
                   value={company.rc}
                   onChange={(e) => set("rc")(e.target.value)}
