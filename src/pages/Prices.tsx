@@ -286,14 +286,19 @@ const Prices = () => {
             </div>
           </div>
 
-          {!profileComplete && (
-            <Card className="p-4 flex flex-wrap items-center justify-between gap-3 border-destructive/50 bg-destructive/5">
-              <p className="text-sm">{(tp as any).profileIncomplete}</p>
+          {!profileComplete && profileLoaded && (
+            <Card className="p-4 flex flex-wrap items-center justify-between gap-3 border-2 border-primary bg-primary/10 shadow-soft">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-primary shrink-0" />
+                <p className="text-sm font-medium">
+                  {(tp as any).profileIncomplete}
+                </p>
+              </div>
               <Button
                 size="sm"
                 onClick={() => navigate("/profile?redirect=/prices")}
               >
-                {(tp as any).completeProfile}
+                {(tp as any).completeNeededInfo ?? (tp as any).completeProfile}
               </Button>
             </Card>
           )}
