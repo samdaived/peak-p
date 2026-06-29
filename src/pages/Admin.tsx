@@ -196,7 +196,7 @@ const Admin = () => {
         description: error.message,
         variant: "destructive",
       });
-    load();
+    loadProducts();
   };
 
   const handleStatusChange = async (id: string, status: string) => {
