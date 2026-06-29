@@ -117,6 +117,7 @@ const Prices = () => {
           /* tables not created yet — ignore */
         }
       }
+      setProfileLoaded(true);
     };
     load();
   }, [user]);
