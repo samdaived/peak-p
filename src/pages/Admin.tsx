@@ -211,7 +211,7 @@ const Admin = () => {
         variant: "destructive",
       });
     toast({ title: ta.statusUpdated });
-    load();
+    loadOrders();
   };
 
   const toggleExpand = (id: string) => {
