@@ -369,7 +369,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>{tp.officeAddress} *</Label>
+              <Label>{tp.officeAddress}</Label>
               <Input
                 value={company.office_address}
                 onChange={(e) => set("office_address")(e.target.value)}
@@ -377,7 +377,7 @@ const Profile = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label>{tp.storageOffice} *</Label>
+              <Label>{tp.storageOffice}</Label>
               <Input
                 value={company.storage_office}
                 onChange={(e) => set("storage_office")(e.target.value)}
