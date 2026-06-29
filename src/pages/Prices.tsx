@@ -464,6 +464,29 @@ const Prices = () => {
         </div>
       </main>
       <Footer />
+
+      <AlertDialog open={profileLoaded && !profileComplete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
+              <AlertCircle className="h-6 w-6 text-primary" />
+            </div>
+            <AlertDialogTitle className="text-center">
+              {(tp as any).completeNeededInfo ?? "Complete needed info"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              {(tp as any).profileIncomplete}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center">
+            <AlertDialogAction
+              onClick={() => navigate("/profile?redirect=/prices")}
+            >
+              {(tp as any).completeNeededInfo ?? (tp as any).completeProfile}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
