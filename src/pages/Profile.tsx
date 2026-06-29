@@ -122,11 +122,8 @@ const Profile = () => {
   const requiredOk = (c: CompanyState) =>
     c.name.trim() &&
     c.ice.trim() &&
-    c.rc.trim() &&
     c.city.trim() &&
-    c.phone.trim() &&
-    c.office_address.trim() &&
-    c.storage_office.trim();
+    c.phone.trim();
 
   const handleCancel = () => {
     if (dirty) setConfirmOpen(true);
