@@ -137,6 +137,7 @@ export const translations = {
       error: "Erreur",
       profileIncomplete: "Veuillez compléter votre profil avant de commander.",
       completeProfile: "Compléter le profil",
+      completeNeededInfo: "Compléter les informations requises",
       minQty: "Quantité minimale 1000 (1k)",
       deliveryAddress: "Adresse de livraison",
     },
