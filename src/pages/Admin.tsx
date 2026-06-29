@@ -173,7 +173,7 @@ const Admin = () => {
     toast({ title: editingId ? ta.productUpdated : ta.productAdded });
     setForm(empty);
     setEditingId(null);
-    load();
+    loadProducts();
   };
 
   const handleEdit = (p: Product) => {
