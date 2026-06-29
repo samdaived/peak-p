@@ -308,12 +308,13 @@ const Profile = () => {
               <h2 className="text-lg font-semibold">{tp.companySection}</h2>
               {!editing && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setEditing(true)}
                   disabled={loading}
+                  className="gap-2"
                 >
-                  {tp.edit}
+                  <Pencil className="h-4 w-4" /> {tp.edit}
                 </Button>
               )}
             </div>
