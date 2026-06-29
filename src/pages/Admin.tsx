@@ -425,7 +425,7 @@ const Admin = () => {
             <p className="text-sm text-muted-foreground">{ta.subtitle}</p>
           </div>
 
-          <Tabs defaultValue="products">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList>
               <TabsTrigger value="products">
                 {ta.products} ({products.length})
