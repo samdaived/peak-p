@@ -251,12 +251,13 @@ const Profile = () => {
               <h2 className="text-lg font-semibold">{tp.personalSection}</h2>
               {!editingPersonal && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setEditingPersonal(true)}
                   disabled={loading}
+                  className="gap-2"
                 >
-                  {tp.edit}
+                  <Pencil className="h-4 w-4" /> {tp.edit}
                 </Button>
               )}
             </div>
