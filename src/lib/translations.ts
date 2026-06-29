@@ -628,6 +628,7 @@ export const translations = {
       profileIncomplete:
         "Please complete your profile before placing an order.",
       completeProfile: "Complete profile",
+      completeNeededInfo: "Complete needed info",
       minQty: "Minimum quantity 1000 (1k)",
       deliveryAddress: "Delivery address",
     },
