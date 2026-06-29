@@ -11,6 +11,7 @@ import { supabase } from "@/lib/customSupabase";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ConfirmDiscardDialog } from "@/components/ConfirmDiscardDialog";
+import { Pencil } from "lucide-react";
 
 type CompanyState = {
   name: string;
