@@ -382,6 +382,7 @@ export const translations = {
       error: "خطأ",
       profileIncomplete: "يرجى إكمال ملفك الشخصي قبل تقديم الطلب.",
       completeProfile: "إكمال الملف الشخصي",
+      completeNeededInfo: "أكمل المعلومات المطلوبة",
       minQty: "الحد الأدنى للكمية 1000 (1k)",
       deliveryAddress: "عنوان التسليم",
     },
