@@ -409,6 +409,15 @@ const Profile = () => {
         confirmLabel={tp.discard}
         onConfirm={discard}
       />
+      <ConfirmDiscardDialog
+        open={confirmPersonalOpen}
+        onOpenChange={setConfirmPersonalOpen}
+        title={tp.discardTitle}
+        description={tp.discardDesc}
+        cancelLabel={tp.keepEditing}
+        confirmLabel={tp.discard}
+        onConfirm={discardPersonal}
+      />
     </div>
   );
 };
