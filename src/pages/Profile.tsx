@@ -11,6 +11,7 @@ import { supabase } from "@/lib/customSupabase";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ConfirmDiscardDialog } from "@/components/ConfirmDiscardDialog";
+import { Pencil } from "lucide-react";
 
 type CompanyState = {
   name: string;
@@ -121,11 +122,8 @@ const Profile = () => {
   const requiredOk = (c: CompanyState) =>
     c.name.trim() &&
     c.ice.trim() &&
-    c.rc.trim() &&
     c.city.trim() &&
-    c.phone.trim() &&
-    c.office_address.trim() &&
-    c.storage_office.trim();
+    c.phone.trim();
 
   const handleCancel = () => {
     if (dirty) setConfirmOpen(true);
@@ -253,12 +251,13 @@ const Profile = () => {
               <h2 className="text-lg font-semibold">{tp.personalSection}</h2>
               {!editingPersonal && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setEditingPersonal(true)}
                   disabled={loading}
+                  className="gap-2"
                 >
-                  {tp.edit}
+                  <Pencil className="h-4 w-4" /> {tp.edit}
                 </Button>
               )}
             </div>
@@ -309,12 +308,13 @@ const Profile = () => {
               <h2 className="text-lg font-semibold">{tp.companySection}</h2>
               {!editing && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setEditing(true)}
                   disabled={loading}
+                  className="gap-2"
                 >
-                  {tp.edit}
+                  <Pencil className="h-4 w-4" /> {tp.edit}
                 </Button>
               )}
             </div>
@@ -342,7 +342,7 @@ const Profile = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label>{tp.rc} *</Label>
+                <Label>{tp.rc}</Label>
                 <Input
                   value={company.rc}
                   onChange={(e) => set("rc")(e.target.value)}
@@ -369,7 +369,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>{tp.officeAddress} *</Label>
+              <Label>{tp.officeAddress}</Label>
               <Input
                 value={company.office_address}
                 onChange={(e) => set("office_address")(e.target.value)}
@@ -377,7 +377,7 @@ const Profile = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label>{tp.storageOffice} *</Label>
+              <Label>{tp.storageOffice}</Label>
               <Input
                 value={company.storage_office}
                 onChange={(e) => set("storage_office")(e.target.value)}

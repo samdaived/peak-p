@@ -17,7 +17,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/customSupabase";
-import { Heart, ListOrdered, ShoppingCart, X } from "lucide-react";
+import { AlertCircle, Heart, ListOrdered, ShoppingCart, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -53,16 +62,15 @@ const Prices = () => {
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
   const profileComplete = !!(
     fullName.trim() &&
     phone.trim() &&
     companyName.trim() &&
     ice.trim() &&
-    rc.trim() &&
     city.trim() &&
-    companyPhone.trim() &&
-    officeAddress.trim() &&
-    storageOffice.trim()
+    companyPhone.trim()
   );
 
   useEffect(() => {
@@ -118,6 +126,7 @@ const Prices = () => {
           /* tables not created yet — ignore */
         }
       }
+      setProfileLoaded(true);
     };
     load();
   }, [user]);
@@ -277,14 +286,19 @@ const Prices = () => {
             </div>
           </div>
 
-          {!profileComplete && (
-            <Card className="p-4 flex flex-wrap items-center justify-between gap-3 border-destructive/50 bg-destructive/5">
-              <p className="text-sm">{(tp as any).profileIncomplete}</p>
+          {!profileComplete && profileLoaded && (
+            <Card className="p-4 flex flex-wrap items-center justify-between gap-3 border-2 border-primary bg-primary/10 shadow-soft">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-primary shrink-0" />
+                <p className="text-sm font-medium">
+                  {(tp as any).profileIncomplete}
+                </p>
+              </div>
               <Button
                 size="sm"
                 onClick={() => navigate("/profile?redirect=/prices")}
               >
-                {(tp as any).completeProfile}
+                {(tp as any).completeNeededInfo ?? (tp as any).completeProfile}
               </Button>
             </Card>
           )}
@@ -450,6 +464,29 @@ const Prices = () => {
         </div>
       </main>
       <Footer />
+
+      <AlertDialog open={profileLoaded && !profileComplete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15">
+              <AlertCircle className="h-6 w-6 text-primary" />
+            </div>
+            <AlertDialogTitle className="text-center">
+              {(tp as any).completeNeededInfo ?? "Complete needed info"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              {(tp as any).profileIncomplete}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center">
+            <AlertDialogAction
+              onClick={() => navigate("/profile?redirect=/prices")}
+            >
+              {(tp as any).completeNeededInfo ?? (tp as any).completeProfile}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
