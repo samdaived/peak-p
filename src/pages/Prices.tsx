@@ -53,16 +53,15 @@ const Prices = () => {
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
   const profileComplete = !!(
     fullName.trim() &&
     phone.trim() &&
     companyName.trim() &&
     ice.trim() &&
-    rc.trim() &&
     city.trim() &&
-    companyPhone.trim() &&
-    officeAddress.trim() &&
-    storageOffice.trim()
+    companyPhone.trim()
   );
 
   useEffect(() => {
