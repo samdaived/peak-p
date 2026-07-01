@@ -334,6 +334,8 @@ export const translations = {
         { name: "نيوفيت بروبيوتيك", category: "الهضم" },
         { name: "نيوفيت زنك", category: "المناعة" },
       ],
+    },
+
 
     about: {
       title: "عن بيك نيوتريشن",
@@ -616,6 +618,8 @@ export const translations = {
         { name: "Neovit Probiotics", category: "Digestion" },
         { name: "Neovit Zinc", category: "Immunity" },
       ],
+    },
+
 
     about: {
       title: "About Peak Nutrition",
