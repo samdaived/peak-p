@@ -14,12 +14,8 @@ export const Header = () => {
   const { user, signOut, isAdmin } = useAuth();
   const buyer = user ? { username: user.email?.split("@")[0] ?? "user" } : null;
 
-  const pricesLabel =
-    t.nav.products === "Produits"
-      ? "Tarifs"
-      : t.nav.products === "المنتجات"
-        ? "الأسعار"
-        : "Prices";
+  const pricesLabel = t.prices.title;
+
 
   const navItems = [
     { label: t.nav.home, href: "/#home", internal: false },
