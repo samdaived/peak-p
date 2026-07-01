@@ -46,6 +46,8 @@ export const translations = {
         { name: "Neovit Probiotiques", category: "Digestion" },
         { name: "Neovit Zinc", category: "Immunité" },
       ],
+    },
+
 
     about: {
       title: "À Propos de Peak Nutrition",
