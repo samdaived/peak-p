@@ -117,6 +117,14 @@ const Orders = () => {
       message: message.trim(),
       status: 'open',
       created_at: new Date().toISOString(),
+      messages: [
+        {
+          id: `msg-${Date.now()}`,
+          author: 'user',
+          text: message.trim(),
+          created_at: new Date().toISOString(),
+        },
+      ],
     };
     setReports((r) => [newReport, ...r]);
     setReportOrderId('');
@@ -125,6 +133,26 @@ const Orders = () => {
     setSubmitting(false);
     toast({ title: o.reportSubmitted });
   };
+
+  const sendChatMessage = (reportId: string) => {
+    const text = chatDraft.trim();
+    if (!text) return;
+    setReports((rs) =>
+      rs.map((r) =>
+        r.id === reportId
+          ? {
+              ...r,
+              messages: [
+                ...r.messages,
+                { id: `msg-${Date.now()}`, author: 'user', text, created_at: new Date().toISOString() },
+              ],
+            }
+          : r,
+      ),
+    );
+    setChatDraft('');
+  };
+
 
   const renderOrders = (list: Order[]) => {
     if (list.length === 0) {
