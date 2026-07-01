@@ -80,7 +80,7 @@ type FavoriteRow = {
 
 const Admin = () => {
   const { t, direction } = useLanguage();
-  const ta = t.admin;
+  const ta: any = t.admin;
 
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
