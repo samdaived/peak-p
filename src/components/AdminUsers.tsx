@@ -79,6 +79,50 @@ export const AdminUsers = () => {
   const [newCompany, setNewCompany] = useState<CompanyState>(emptyCompany);
   const [creating, setCreating] = useState(false);
 
+  // new user signup form
+  const [signupOpen, setSignupOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    email: "",
+    password: "",
+    full_name: "",
+    phone: "",
+  });
+  const [signingUp, setSigningUp] = useState(false);
+
+  const signupUser = async () => {
+    if (!newUser.email.trim() || !newUser.password.trim()) {
+      return toast({
+        title: ta.error,
+        description: ta.emailPasswordRequired ?? "Email and password required",
+        variant: "destructive",
+      });
+    }
+    setSigningUp(true);
+    const { error } = await supabase.auth.signUp({
+      email: newUser.email.trim(),
+      password: newUser.password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+        data: {
+          full_name: newUser.full_name.trim(),
+          phone: newUser.phone.trim(),
+        },
+      },
+    });
+    setSigningUp(false);
+    if (error)
+      return toast({
+        title: ta.error,
+        description: error.message,
+        variant: "destructive",
+      });
+    toast({ title: ta.userCreated ?? "User created" });
+    setSignupOpen(false);
+    setNewUser({ email: "", password: "", full_name: "", phone: "" });
+    await loadAll();
+  };
+
+
   const userDirty = useMemo(
     () => JSON.stringify(userForm) !== JSON.stringify(userOriginal),
     [userForm, userOriginal],
