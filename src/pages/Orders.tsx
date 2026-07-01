@@ -277,40 +277,80 @@ const Orders = () => {
               {reports.length === 0 ? (
                 <Card className="p-8 text-center text-muted-foreground">{o.noReports}</Card>
               ) : (
-                <Card className="p-6 overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>{o.order}</TableHead>
-                        <TableHead>{o.issueType}</TableHead>
-                        <TableHead>{o.message}</TableHead>
-                        <TableHead>{o.created}</TableHead>
-                        <TableHead className="text-right">{o.reportStatus}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {reports.map((r) => {
-                        const label = issueOptions.find((x) => x.value === r.issue_type)?.label ?? r.issue_type;
-                        return (
-                          <TableRow key={r.id}>
-                            <TableCell className="font-mono text-xs">#{r.order_id.slice(0, 8)}</TableCell>
-                            <TableCell>{label}</TableCell>
-                            <TableCell className="max-w-xs truncate" title={r.message}>{r.message}</TableCell>
-                            <TableCell className="text-xs text-muted-foreground">
-                              {new Date(r.created_at).toLocaleString()}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Badge variant={reportStatusVariant(r.status) as any}>
-                                {reportStatusLabel(r.status)}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </Card>
+                <div className="space-y-3">
+                  {reports.map((r) => {
+                    const label = issueOptions.find((x) => x.value === r.issue_type)?.label ?? r.issue_type;
+                    const isOpen = openReportId === r.id;
+                    return (
+                      <Card key={r.id} className="p-4 space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="font-mono text-xs text-muted-foreground">#{r.order_id.slice(0, 8)}</div>
+                            <div className="font-medium">{label}</div>
+                            <div className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant={reportStatusVariant(r.status) as any}>{reportStatusLabel(r.status)}</Badge>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setOpenReportId(isOpen ? null : r.id);
+                                setChatDraft('');
+                              }}
+                            >
+                              {o.openChat} ({r.messages.length})
+                            </Button>
+                          </div>
+                        </div>
+
+                        {isOpen && (
+                          <div className="border-t pt-3 space-y-3">
+                            <div className="space-y-2 max-h-80 overflow-y-auto">
+                              {r.messages.length === 0 ? (
+                                <p className="text-sm text-muted-foreground text-center py-4">{o.noMessages}</p>
+                              ) : (
+                                r.messages.map((m) => (
+                                  <div
+                                    key={m.id}
+                                    className={`flex ${m.author === 'user' ? 'justify-end' : 'justify-start'}`}
+                                  >
+                                    <div
+                                      className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${
+                                        m.author === 'user'
+                                          ? 'bg-primary text-primary-foreground'
+                                          : 'bg-muted text-foreground'
+                                      }`}
+                                    >
+                                      <div>{m.text}</div>
+                                      <div className="text-[10px] opacity-70 mt-1">
+                                        {new Date(m.created_at).toLocaleString()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                            <div className="flex gap-2">
+                              <Textarea
+                                value={chatDraft}
+                                onChange={(e) => setChatDraft(e.target.value)}
+                                placeholder={o.typeMessage}
+                                rows={2}
+                                className="flex-1"
+                              />
+                              <Button onClick={() => sendChatMessage(r.id)} disabled={!chatDraft.trim()}>
+                                {o.send}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </Card>
+                    );
+                  })}
+                </div>
               )}
+
             </TabsContent>
           </Tabs>
         </div>
