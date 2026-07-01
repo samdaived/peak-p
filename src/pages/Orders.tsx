@@ -42,6 +42,13 @@ type Order = {
   order_items: OrderItem[];
 };
 
+type ChatMessage = {
+  id: string;
+  author: 'user' | 'admin';
+  text: string;
+  created_at: string;
+};
+
 type IssueReport = {
   id: string;
   order_id: string;
@@ -49,6 +56,7 @@ type IssueReport = {
   message: string;
   status: 'open' | 'in_progress' | 'resolved';
   created_at: string;
+  messages: ChatMessage[];
 };
 
 const Orders = () => {
@@ -61,6 +69,9 @@ const Orders = () => {
   const [issueType, setIssueType] = useState<string>('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [openReportId, setOpenReportId] = useState<string | null>(null);
+  const [chatDraft, setChatDraft] = useState('');
+
 
   const load = () => {
     if (!user) return;
