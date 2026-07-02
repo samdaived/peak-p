@@ -5,22 +5,13 @@ import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/customSupabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ARCHIVED_ORDER_STATUSES } from '@/lib/translations';
+
 
 type OrderItem = {
   id: string;
@@ -56,11 +47,6 @@ const Orders = () => {
   const { t, direction } = useLanguage();
   const o: any = t.orders;
   const [orders, setOrders] = useState<Order[]>([]);
-  const [reports, setReports] = useState<IssueReport[]>([]);
-  const [reportOrderId, setReportOrderId] = useState<string>('');
-  const [issueType, setIssueType] = useState<string>('');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
 
   const load = () => {
     if (!user) return;
@@ -79,41 +65,6 @@ const Orders = () => {
 
   const statusLabel = (s: string) => (t.status as any)[s.toLowerCase()] ?? s;
 
-  const issueOptions = [
-    { value: 'wrong_item', label: o.issueWrongItem },
-    { value: 'damaged', label: o.issueDamaged },
-    { value: 'missing', label: o.issueMissing },
-    { value: 'late', label: o.issueLate },
-    { value: 'other', label: o.issueOther },
-  ];
-
-  const reportStatusLabel = (s: IssueReport['status']) =>
-    s === 'open' ? o.reportOpen : s === 'in_progress' ? o.reportInProgress : o.reportResolved;
-  const reportStatusVariant = (s: IssueReport['status']) =>
-    s === 'resolved' ? 'secondary' : s === 'in_progress' ? 'default' : 'destructive';
-
-  const submitReport = async () => {
-    if (!reportOrderId || !issueType || !message.trim()) {
-      toast({ title: o.error, variant: 'destructive' });
-      return;
-    }
-    setSubmitting(true);
-    // FE-only — backend wiring will be added later.
-    const newReport: IssueReport = {
-      id: `local-${Date.now()}`,
-      order_id: reportOrderId,
-      issue_type: issueType,
-      message: message.trim(),
-      status: 'open',
-      created_at: new Date().toISOString(),
-    };
-    setReports((r) => [newReport, ...r]);
-    setReportOrderId('');
-    setIssueType('');
-    setMessage('');
-    setSubmitting(false);
-    toast({ title: o.reportSubmitted });
-  };
 
   const renderOrders = (list: Order[]) => {
     if (list.length === 0) {
