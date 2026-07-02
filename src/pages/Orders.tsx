@@ -178,8 +178,8 @@ const Orders = () => {
             <TabsList>
               <TabsTrigger value="active">{o.active} ({activeOrders.length})</TabsTrigger>
               <TabsTrigger value="archive">{o.archive} ({archivedOrders.length})</TabsTrigger>
-              <TabsTrigger value="reports">{o.reports} ({reports.length})</TabsTrigger>
             </TabsList>
+
             <TabsContent value="active" className="space-y-4">
               {renderOrders(activeOrders)}
             </TabsContent>
