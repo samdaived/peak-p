@@ -2,7 +2,16 @@ import productImage from "@/assets/neovit-product.jpeg";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/lib/customSupabase";
-import { Award, Check, Factory, Leaf, Pill, Scale, Sparkles, Tag } from "lucide-react";
+import {
+  Award,
+  Check,
+  Factory,
+  Leaf,
+  Pill,
+  Scale,
+  Sparkles,
+  Tag,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 type CatalogProduct = {
@@ -72,9 +81,21 @@ export const ProductSection = () => {
   ];
 
   const pillars = [
-    { icon: <Award className="w-6 h-6" />, title: tp.pillars.prime, text: tp.pillars.primeText },
-    { icon: <Tag className="w-6 h-6" />, title: tp.pillars.price, text: tp.pillars.priceText },
-    { icon: <Factory className="w-6 h-6" />, title: tp.pillars.eu, text: tp.pillars.euText },
+    {
+      icon: <Award className="w-6 h-6" />,
+      title: tp.pillars.prime,
+      text: tp.pillars.primeText,
+    },
+    {
+      icon: <Tag className="w-6 h-6" />,
+      title: tp.pillars.price,
+      text: tp.pillars.priceText,
+    },
+    {
+      icon: <Factory className="w-6 h-6" />,
+      title: tp.pillars.eu,
+      text: tp.pillars.euText,
+    },
   ];
 
   return (
@@ -82,7 +103,10 @@ export const ProductSection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <Badge variant="secondary" className="mb-4 gradient-gold text-secondary-foreground shadow-gold">
+          <Badge
+            variant="secondary"
+            className="mb-4 gradient-gold text-secondary-foreground shadow-gold"
+          >
             {tp.brand}
           </Badge>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
@@ -113,13 +137,21 @@ export const ProductSection = () => {
           <div className="glass-card rounded-3xl shadow-card overflow-hidden">
             <div className="grid md:grid-cols-2 gap-0">
               <div className="rounded-3xl overflow-hidden">
-                <img src={productImage} alt="Neovit Calcium + D3" className="w-full animate-shake drop-shadow-2xl" />
+                <img
+                  src={productImage}
+                  alt="Neovit Calcium + D3"
+                  className="w-full animate-shake drop-shadow-2xl"
+                />
               </div>
               <div className="p-8 md:p-12 flex flex-col justify-center">
                 <div className="space-y-6">
                   <div>
-                    <p className="text-sm font-medium text-primary mb-2">{tp.brand}</p>
-                    <h3 className="text-2xl md:text-3xl font-bold text-foreground">{tp.name}</h3>
+                    <p className="text-sm font-medium text-primary mb-2">
+                      {tp.brand}
+                    </p>
+                    <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                      {tp.name}
+                    </h3>
                   </div>
                   <p className="text-muted-foreground">{tp.description}</p>
                   <div className="grid grid-cols-2 gap-4">
@@ -137,21 +169,29 @@ export const ProductSection = () => {
                     </div>
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground mb-3">{tp.benefits}</p>
+                    <p className="font-semibold text-foreground mb-3">
+                      {tp.benefits}
+                    </p>
                     <ul className="space-y-2">
                       {benefits.map((b, i) => (
                         <li key={i} className="flex items-center gap-3">
                           <span className="flex-shrink-0 w-6 h-6 rounded-full gradient-primary flex items-center justify-center text-primary-foreground">
                             {b.icon}
                           </span>
-                          <span className="text-muted-foreground">{b.text}</span>
+                          <span className="text-muted-foreground">
+                            {b.text}
+                          </span>
                         </li>
                       ))}
                     </ul>
                   </div>
                   <div className="p-4 rounded-xl bg-accent/50 border border-border">
-                    <p className="font-semibold text-foreground mb-2">{tp.usage}</p>
-                    <p className="text-sm text-muted-foreground">{tp.usageText}</p>
+                    <p className="font-semibold text-foreground mb-2">
+                      {tp.usage}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {tp.usageText}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -162,19 +202,30 @@ export const ProductSection = () => {
         {/* Catalog (from DB) */}
         <div className="max-w-5xl mx-auto mt-20 md:mt-28">
           <div className="text-center mb-10">
-            <Badge variant="secondary" className="mb-4 gradient-gold text-secondary-foreground shadow-gold">
+            <Badge
+              variant="secondary"
+              className="mb-4 gradient-gold text-secondary-foreground shadow-gold"
+            >
               <Sparkles className="w-3.5 h-3.5 mr-1" />
               {tp.upcomingTitle}
             </Badge>
-            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{tp.upcomingTitle}</h3>
-            <p className="text-muted-foreground text-sm md:text-base">{tp.upcomingSubtitle}</p>
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+              {tp.upcomingTitle}
+            </h3>
+            <p className="text-muted-foreground text-sm md:text-base">
+              {tp.upcomingSubtitle}
+            </p>
           </div>
 
-          <div className="glass-card rounded-2xl overflow-hidden shadow-card">
+          <div className="glass-card rounded-2xl overflow-hidden shadow-card max-h-[60vh] overflow-y-auto">
             {loading ? (
-              <p className="text-center text-muted-foreground py-10">{tp.loading}</p>
+              <p className="text-center text-muted-foreground py-10">
+                {tp.loading}
+              </p>
             ) : products.length === 0 ? (
-              <p className="text-center text-muted-foreground py-10">{tp.empty}</p>
+              <p className="text-center text-muted-foreground py-10">
+                {tp.empty}
+              </p>
             ) : (
               <ul className="divide-y divide-border/60">
                 {products.map((p, i) => {
@@ -195,8 +246,12 @@ export const ProductSection = () => {
                           <Sparkles className="w-5 h-5 text-primary-foreground" />
                         </span>
                         <div className="min-w-0">
-                          <p className="font-semibold text-foreground truncate">{p.name}</p>
-                          <p className="text-xs text-muted-foreground truncate">{categoryLabel(p.category)}</p>
+                          <p className="font-semibold text-foreground truncate">
+                            {p.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {categoryLabel(p.category)}
+                          </p>
                         </div>
                       </div>
 
