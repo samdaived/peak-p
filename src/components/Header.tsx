@@ -128,7 +128,7 @@ export const Header = () => {
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem
-                      onClick={() => navigate("/orders?tab=reports")}
+                      onClick={() => navigate("/reports")}
                     >
                       <FileText className="h-4 w-4 mr-2" />
                       {reportsLabel}
@@ -215,7 +215,7 @@ export const Header = () => {
                   </Link>
                 )}
                 <Link
-                  to="/orders?tab=reports"
+                  to="/reports"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-2 px-2 py-2 text-sm hover:bg-accent rounded-lg"
                 >
