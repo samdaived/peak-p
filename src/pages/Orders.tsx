@@ -33,14 +33,6 @@ type Order = {
   order_items: OrderItem[];
 };
 
-type IssueReport = {
-  id: string;
-  order_id: string;
-  issue_type: string;
-  message: string;
-  status: 'open' | 'in_progress' | 'resolved';
-  created_at: string;
-};
 
 const Orders = () => {
   const { user } = useAuth();
