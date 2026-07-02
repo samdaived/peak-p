@@ -17,7 +17,10 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const queryClient = new QueryClient();
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const errrr = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+console.log(SUPABASE_URL,errrr)
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
