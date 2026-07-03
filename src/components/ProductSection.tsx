@@ -2,8 +2,8 @@ import productImage from "@/assets/neovit-product.jpeg";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Award, Check, Factory, Info, Leaf, Pill, Scale, Sparkles, Tag } from "lucide-react";
-import { useState } from "react";
+import { Award, Check, ChevronDown, Factory, Info, Leaf, Pill, Scale, Sparkles, Tag } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import productsData from "@/data/products.json";
 
 type CatalogProduct = {
@@ -104,6 +104,23 @@ export const ProductSection = () => {
   const { t, direction, language } = useLanguage();
   const tp = t.product as any;
   const [selected, setSelected] = useState<CatalogProduct | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollState, setScrollState] = useState<{ canScroll: boolean; atBottom: boolean }>({ canScroll: false, atBottom: false });
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const update = () => {
+      const canScroll = el.scrollHeight > el.clientHeight + 4;
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8;
+      setScrollState({ canScroll, atBottom });
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => { el.removeEventListener("scroll", update); ro.disconnect(); };
+  }, []);
 
   const nameFor = (p: any) => {
     if (language === "fr") return p.name_fr ?? p.name;
@@ -240,7 +257,11 @@ export const ProductSection = () => {
             <p className="text-muted-foreground text-sm md:text-base">{tp.upcomingSubtitle}</p>
           </div>
 
-          <div className="glass-card rounded-2xl overflow-hidden shadow-card max-h-[60vh] overflow-y-auto">
+          <div className="relative">
+            <div
+              ref={scrollRef}
+              className="glass-card rounded-2xl overflow-hidden shadow-card max-h-[60vh] overflow-y-auto scroll-smooth [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-primary/30 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-primary/50"
+            >
             {loading ? (
               <p className="text-center text-muted-foreground py-10">{tp.loading}</p>
             ) : products.length === 0 ? (
@@ -303,6 +324,26 @@ export const ProductSection = () => {
                 })}
               </ul>
             )}
+            </div>
+            {/* Bottom fade overlay */}
+            <div
+              className={`pointer-events-none absolute inset-x-0 bottom-0 h-16 rounded-b-2xl bg-gradient-to-t from-background via-background/80 to-transparent transition-opacity duration-300 ${
+                scrollState.canScroll && !scrollState.atBottom ? "opacity-100" : "opacity-0"
+              }`}
+              aria-hidden
+            />
+            {/* Scroll hint chip */}
+            <div
+              className={`pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 transition-all duration-300 ${
+                scrollState.canScroll && !scrollState.atBottom ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+              }`}
+              aria-hidden
+            >
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground shadow-lg backdrop-blur">
+                {tp.scrollHint ?? "Scroll for more"}
+                <ChevronDown className="w-3.5 h-3.5 animate-bounce" />
+              </span>
+            </div>
           </div>
         </div>
       </div>
