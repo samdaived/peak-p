@@ -13,7 +13,6 @@ export const translations = {
       myReports: "Mes commandes / Signalements",
     },
 
-
     hero: {
       tagline: "Votre Partenaire Santé",
       title: "Nutrition de Qualité Premium",
@@ -40,7 +39,8 @@ export const translations = {
       benefit2: "Fonction musculaire normale",
       benefit3: "Absorption du calcium optimisée",
       upcomingTitle: "Notre Catalogue",
-      upcomingSubtitle: "Des produits premium à prix compétitifs, fabriqués dans l'Union Européenne selon les normes GMP et ISO 22000",
+      upcomingSubtitle:
+        "Des produits premium à prix compétitifs, fabriqués dans l'Union Européenne selon les normes GMP et ISO 22000",
       pillars: {
         prime: "Qualité Prime",
         primeText: "Produits premium sélectionnés pour leur efficacité",
@@ -75,18 +75,24 @@ export const translations = {
         collecting_legal_papers: "Collecte des documents légaux",
         submitted: "Soumis",
         in_progress: "En cours",
-        dmp_in_progress: "DMP en cours",
+        dmp_in_progress: "En cours",
         dmp_certified: "DMP certifié",
         ordered: "Commandé",
         in_stock: "En stock",
       },
       statusInfo: {
-        collecting_legal_papers: "Nous rassemblons les documents légaux nécessaires au dossier d'enregistrement du produit.",
-        submitted: "Le dossier d'enregistrement a été soumis aux autorités sanitaires.",
-        in_progress: "Le produit est en cours d'enregistrement DMP (Dossier de Mise sur le Marché) auprès des autorités.",
-        dmp_in_progress: "Le produit est en cours d'enregistrement DMP (Dossier de Mise sur le Marché) auprès des autorités.",
-        dmp_certified: "Le produit a obtenu sa certification DMP et est autorisé à la commercialisation.",
-        ordered: "Le produit est commandé auprès du fabricant européen et arrivera bientôt en stock.",
+        collecting_legal_papers:
+          "Nous rassemblons les documents légaux nécessaires au dossier d'enregistrement du produit.",
+        submitted:
+          "Le dossier d'enregistrement a été soumis aux autorités sanitaires.",
+        in_progress:
+          "Le produit est en cours d'enregistrement (Dossier de Mise sur le Marché) auprès des autorités.",
+        dmp_in_progress:
+          "Le produit est en cours d'enregistrement (Dossier de Mise sur le Marché) auprès des autorités.",
+        dmp_certified:
+          "Le produit a obtenu sa certification DMP et est autorisé à la commercialisation.",
+        ordered:
+          "Le produit est commandé auprès du fabricant européen et arrivera bientôt en stock.",
         in_stock: "Le produit est disponible en stock et prêt à être commandé.",
       },
       dialog: {
@@ -98,7 +104,6 @@ export const translations = {
         aboutStatus: "À propos de ce statut",
       },
     },
-
 
     about: {
       title: "À Propos de Peak Nutrition",
@@ -353,7 +358,6 @@ export const translations = {
       myReports: "طلباتي / البلاغات",
     },
 
-
     hero: {
       tagline: "شريكك في الصحة",
       title: "تغذية عالية الجودة",
@@ -379,7 +383,8 @@ export const translations = {
       benefit2: "وظيفة العضلات الطبيعية",
       benefit3: "امتصاص محسن للكالسيوم",
       upcomingTitle: "كتالوجنا",
-      upcomingSubtitle: "منتجات ممتازة بأسعار تنافسية، مصنوعة في الاتحاد الأوروبي وفقًا لمعايير GMP و ISO 22000",
+      upcomingSubtitle:
+        "منتجات ممتازة بأسعار تنافسية، مصنوعة في الاتحاد الأوروبي وفقًا لمعايير GMP و ISO 22000",
       pillars: {
         prime: "جودة ممتازة",
         primeText: "منتجات مختارة بعناية لفعاليتها",
@@ -414,17 +419,18 @@ export const translations = {
         collecting_legal_papers: "جمع الوثائق القانونية",
         submitted: "تم التقديم",
         in_progress: "قيد التنفيذ",
-        dmp_in_progress: "DMP قيد التنفيذ",
-        dmp_certified: "DMP معتمد",
+        dmp_in_progress: "قيد التنفيذ",
+        dmp_certified: "معتمد",
         ordered: "تم الطلب",
         in_stock: "متوفر في المخزون",
       },
       statusInfo: {
-        collecting_legal_papers: "نحن نجمع الوثائق القانونية اللازمة لملف تسجيل المنتج.",
+        collecting_legal_papers:
+          "نحن نجمع الوثائق القانونية اللازمة لملف تسجيل المنتج.",
         submitted: "تم تقديم ملف التسجيل إلى السلطات الصحية.",
-        in_progress: "المنتج قيد التسجيل ضمن نظام DMP (ملف التسويق) لدى السلطات.",
-        dmp_in_progress: "المنتج قيد التسجيل ضمن نظام DMP (ملف التسويق) لدى السلطات.",
-        dmp_certified: "حصل المنتج على شهادة DMP وأصبح مرخصًا للتسويق.",
+        in_progress: "المنتج قيد التسجيل لدى السلطات.",
+        dmp_in_progress: "المنتج قيد التسجيل لدى السلطات.",
+        dmp_certified: "المنتج معتمد للتسويق.",
         ordered: "تم طلب المنتج من المصنع الأوروبي وسيصل إلى المخزون قريبًا.",
         in_stock: "المنتج متوفر في المخزون وجاهز للطلب.",
       },
@@ -437,7 +443,6 @@ export const translations = {
         aboutStatus: "حول هذه الحالة",
       },
     },
-
 
     about: {
       title: "عن بيك نيوتريشن",
@@ -687,7 +692,6 @@ export const translations = {
       myReports: "My orders / Reports",
     },
 
-
     hero: {
       tagline: "Your Health Partner",
       title: "Premium Quality Nutrition",
@@ -714,7 +718,8 @@ export const translations = {
       benefit2: "Normal muscle function",
       benefit3: "Optimized calcium absorption",
       upcomingTitle: "Our Catalog",
-      upcomingSubtitle: "Prime-quality products at competitive prices, manufactured in the European Union under GMP & ISO 22000 standards",
+      upcomingSubtitle:
+        "Prime-quality products at competitive prices, manufactured in the European Union under GMP & ISO 22000 standards",
       pillars: {
         prime: "Prime Quality",
         primeText: "Premium products selected for their efficacy",
@@ -749,18 +754,24 @@ export const translations = {
         collecting_legal_papers: "Collecting Legal Papers",
         submitted: "Submitted",
         in_progress: "In Progress",
-        dmp_in_progress: "DMP In Progress",
-        dmp_certified: "DMP Certified",
+        dmp_in_progress: "In Progress",
+        dmp_certified: "Certified",
         ordered: "Ordered",
         in_stock: "In Stock",
       },
       statusInfo: {
-        collecting_legal_papers: "We are gathering the legal documents required for the product registration dossier.",
-        submitted: "The registration dossier has been submitted to the health authorities.",
-        in_progress: "The product is undergoing DMP (Market Authorization Dossier) registration with the authorities.",
-        dmp_in_progress: "The product is undergoing DMP (Market Authorization Dossier) registration with the authorities.",
-        dmp_certified: "The product has obtained its DMP certification and is authorized for sale.",
-        ordered: "The product has been ordered from the European manufacturer and will arrive in stock soon.",
+        collecting_legal_papers:
+          "We are gathering the legal documents required for the product registration dossier.",
+        submitted:
+          "The registration dossier has been submitted to the health authorities.",
+        in_progress:
+          "The product is undergoing registration with the authorities.",
+        dmp_in_progress:
+          "The product is undergoing registration with the authorities.",
+        dmp_certified:
+          "The product has obtained its DMP certification and is authorized for sale.",
+        ordered:
+          "The product has been ordered from the European manufacturer and will arrive in stock soon.",
         in_stock: "The product is available in stock and ready to order.",
       },
       dialog: {
@@ -772,7 +783,6 @@ export const translations = {
         aboutStatus: "About this status",
       },
     },
-
 
     about: {
       title: "About Peak Nutrition",
