@@ -41,6 +41,7 @@ export const translations = {
       upcomingTitle: "Notre Catalogue",
       upcomingSubtitle:
         "Des produits premium à prix compétitifs, fabriqués dans l'Union Européenne selon les normes GMP et ISO 22000",
+      scrollHint: "Faites défiler pour voir plus",
       pillars: {
         prime: "Qualité Prime",
         primeText: "Produits premium sélectionnés pour leur efficacité",
@@ -385,6 +386,7 @@ export const translations = {
       upcomingTitle: "كتالوجنا",
       upcomingSubtitle:
         "منتجات ممتازة بأسعار تنافسية، مصنوعة في الاتحاد الأوروبي وفقًا لمعايير GMP و ISO 22000",
+      scrollHint: "مرر لعرض المزيد",
       pillars: {
         prime: "جودة ممتازة",
         primeText: "منتجات مختارة بعناية لفعاليتها",
@@ -720,6 +722,7 @@ export const translations = {
       upcomingTitle: "Our Catalog",
       upcomingSubtitle:
         "Prime-quality products at competitive prices, manufactured in the European Union under GMP & ISO 22000 standards",
+      scrollHint: "Scroll for more",
       pillars: {
         prime: "Prime Quality",
         primeText: "Premium products selected for their efficacy",
