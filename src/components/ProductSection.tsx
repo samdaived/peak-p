@@ -257,7 +257,11 @@ export const ProductSection = () => {
             <p className="text-muted-foreground text-sm md:text-base">{tp.upcomingSubtitle}</p>
           </div>
 
-          <div className="glass-card rounded-2xl overflow-hidden shadow-card max-h-[60vh] overflow-y-auto">
+          <div className="relative">
+            <div
+              ref={scrollRef}
+              className="glass-card rounded-2xl overflow-hidden shadow-card max-h-[60vh] overflow-y-auto scroll-smooth [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-primary/30 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-primary/50"
+            >
             {loading ? (
               <p className="text-center text-muted-foreground py-10">{tp.loading}</p>
             ) : products.length === 0 ? (
