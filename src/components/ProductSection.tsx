@@ -324,6 +324,26 @@ export const ProductSection = () => {
                 })}
               </ul>
             )}
+            </div>
+            {/* Bottom fade overlay */}
+            <div
+              className={`pointer-events-none absolute inset-x-0 bottom-0 h-16 rounded-b-2xl bg-gradient-to-t from-background via-background/80 to-transparent transition-opacity duration-300 ${
+                scrollState.canScroll && !scrollState.atBottom ? "opacity-100" : "opacity-0"
+              }`}
+              aria-hidden
+            />
+            {/* Scroll hint chip */}
+            <div
+              className={`pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 transition-all duration-300 ${
+                scrollState.canScroll && !scrollState.atBottom ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+              }`}
+              aria-hidden
+            >
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground shadow-lg backdrop-blur">
+                {tp.scrollHint ?? "Scroll for more"}
+                <ChevronDown className="w-3.5 h-3.5 animate-bounce" />
+              </span>
+            </div>
           </div>
         </div>
       </div>
