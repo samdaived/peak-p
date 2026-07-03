@@ -1,7 +1,9 @@
 import productImage from "@/assets/neovit-product.jpeg";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Award, Check, Factory, Leaf, Pill, Scale, Sparkles, Tag } from "lucide-react";
+import { Award, Check, Factory, Info, Leaf, Pill, Scale, Sparkles, Tag } from "lucide-react";
+import { useState } from "react";
 import productsData from "@/data/products.json";
 
 type CatalogProduct = {
