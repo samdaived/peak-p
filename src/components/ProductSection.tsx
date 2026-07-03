@@ -103,6 +103,7 @@ const DEFAULT_STYLE = {
 export const ProductSection = () => {
   const { t, direction, language } = useLanguage();
   const tp = t.product as any;
+  const [selected, setSelected] = useState<CatalogProduct | null>(null);
 
   const nameFor = (p: any) => {
     if (language === "fr") return p.name_fr ?? p.name;
