@@ -1,7 +1,9 @@
 import productImage from "@/assets/neovit-product.jpeg";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Award, Check, Factory, Leaf, Pill, Scale, Sparkles, Tag } from "lucide-react";
+import { Award, Check, Factory, Info, Leaf, Pill, Scale, Sparkles, Tag } from "lucide-react";
+import { useState } from "react";
 import productsData from "@/data/products.json";
 
 type CatalogProduct = {
@@ -101,6 +103,7 @@ const DEFAULT_STYLE = {
 export const ProductSection = () => {
   const { t, direction, language } = useLanguage();
   const tp = t.product as any;
+  const [selected, setSelected] = useState<CatalogProduct | null>(null);
 
   const nameFor = (p: any) => {
     if (language === "fr") return p.name_fr ?? p.name;
@@ -251,7 +254,11 @@ export const ProductSection = () => {
                   return (
                     <li
                       key={p.id}
-                      className={`group flex flex-col md:flex-row md:items-center gap-3 md:gap-6 px-4 md:px-8 py-4 transition-all duration-300 hover:bg-primary/5 ${
+                      onClick={() => setSelected(p)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelected(p); } }}
+                      className={`group flex flex-col md:flex-row md:items-center gap-3 md:gap-6 px-4 md:px-8 py-4 cursor-pointer transition-all duration-300 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
                         i % 2 === 0 ? "bg-background/40" : "bg-muted/30"
                       }`}
                     >
@@ -299,6 +306,58 @@ export const ProductSection = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-lg">
+          {selected && (() => {
+            const progress = STATUS_PROGRESS[selected.status ?? ""] ?? 0;
+            const style = STATUS_STYLE[selected.status ?? ""] ?? DEFAULT_STYLE;
+            const td = tp.dialog ?? {};
+            const info = tp.statusInfo?.[selected.status ?? ""] ?? "";
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-xl pr-6 break-words">{selected.name}</DialogTitle>
+                  <DialogDescription>{td.details}</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{td.category}</p>
+                      <p className="font-medium text-foreground">{categoryLabel(selected.category)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{td.status}</p>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${style.pill}`}>
+                        <span className={`inline-flex rounded-full h-2 w-2 ${style.dot}`} />
+                        {statusLabel(selected.status)}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">{td.progress}</p>
+                      <p className="text-xs text-muted-foreground">{progress}%</p>
+                    </div>
+                    <div className="h-2 rounded-full bg-border/60 overflow-hidden">
+                      <div className={`h-full ${style.bar} transition-all duration-500`} style={{ width: `${progress}%` }} />
+                    </div>
+                  </div>
+                  {info && (
+                    <div className="rounded-xl border border-border bg-accent/40 p-4 flex gap-3">
+                      <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-foreground text-sm mb-1">{td.aboutStatus}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{info}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
