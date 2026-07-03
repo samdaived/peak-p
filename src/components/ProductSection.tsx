@@ -306,6 +306,58 @@ export const ProductSection = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-lg">
+          {selected && (() => {
+            const progress = STATUS_PROGRESS[selected.status ?? ""] ?? 0;
+            const style = STATUS_STYLE[selected.status ?? ""] ?? DEFAULT_STYLE;
+            const td = tp.dialog ?? {};
+            const info = tp.statusInfo?.[selected.status ?? ""] ?? "";
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-xl pr-6 break-words">{selected.name}</DialogTitle>
+                  <DialogDescription>{td.details}</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{td.category}</p>
+                      <p className="font-medium text-foreground">{categoryLabel(selected.category)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{td.status}</p>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${style.pill}`}>
+                        <span className={`inline-flex rounded-full h-2 w-2 ${style.dot}`} />
+                        {statusLabel(selected.status)}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">{td.progress}</p>
+                      <p className="text-xs text-muted-foreground">{progress}%</p>
+                    </div>
+                    <div className="h-2 rounded-full bg-border/60 overflow-hidden">
+                      <div className={`h-full ${style.bar} transition-all duration-500`} style={{ width: `${progress}%` }} />
+                    </div>
+                  </div>
+                  {info && (
+                    <div className="rounded-xl border border-border bg-accent/40 p-4 flex gap-3">
+                      <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-foreground text-sm mb-1">{td.aboutStatus}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{info}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
