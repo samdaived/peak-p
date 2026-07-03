@@ -80,6 +80,23 @@ export const translations = {
         ordered: "Commandé",
         in_stock: "En stock",
       },
+      statusInfo: {
+        collecting_legal_papers: "Nous rassemblons les documents légaux nécessaires au dossier d'enregistrement du produit.",
+        submitted: "Le dossier d'enregistrement a été soumis aux autorités sanitaires.",
+        in_progress: "Le produit est en cours d'enregistrement DMP (Dossier de Mise sur le Marché) auprès des autorités.",
+        dmp_in_progress: "Le produit est en cours d'enregistrement DMP (Dossier de Mise sur le Marché) auprès des autorités.",
+        dmp_certified: "Le produit a obtenu sa certification DMP et est autorisé à la commercialisation.",
+        ordered: "Le produit est commandé auprès du fabricant européen et arrivera bientôt en stock.",
+        in_stock: "Le produit est disponible en stock et prêt à être commandé.",
+      },
+      dialog: {
+        details: "Détails du produit",
+        category: "Catégorie",
+        status: "Statut",
+        progress: "Progression",
+        close: "Fermer",
+        aboutStatus: "À propos de ce statut",
+      },
     },
 
 
@@ -402,6 +419,23 @@ export const translations = {
         ordered: "تم الطلب",
         in_stock: "متوفر في المخزون",
       },
+      statusInfo: {
+        collecting_legal_papers: "نحن نجمع الوثائق القانونية اللازمة لملف تسجيل المنتج.",
+        submitted: "تم تقديم ملف التسجيل إلى السلطات الصحية.",
+        in_progress: "المنتج قيد التسجيل ضمن نظام DMP (ملف التسويق) لدى السلطات.",
+        dmp_in_progress: "المنتج قيد التسجيل ضمن نظام DMP (ملف التسويق) لدى السلطات.",
+        dmp_certified: "حصل المنتج على شهادة DMP وأصبح مرخصًا للتسويق.",
+        ordered: "تم طلب المنتج من المصنع الأوروبي وسيصل إلى المخزون قريبًا.",
+        in_stock: "المنتج متوفر في المخزون وجاهز للطلب.",
+      },
+      dialog: {
+        details: "تفاصيل المنتج",
+        category: "الفئة",
+        status: "الحالة",
+        progress: "التقدم",
+        close: "إغلاق",
+        aboutStatus: "حول هذه الحالة",
+      },
     },
 
 
@@ -719,6 +753,23 @@ export const translations = {
         dmp_certified: "DMP Certified",
         ordered: "Ordered",
         in_stock: "In Stock",
+      },
+      statusInfo: {
+        collecting_legal_papers: "We are gathering the legal documents required for the product registration dossier.",
+        submitted: "The registration dossier has been submitted to the health authorities.",
+        in_progress: "The product is undergoing DMP (Market Authorization Dossier) registration with the authorities.",
+        dmp_in_progress: "The product is undergoing DMP (Market Authorization Dossier) registration with the authorities.",
+        dmp_certified: "The product has obtained its DMP certification and is authorized for sale.",
+        ordered: "The product has been ordered from the European manufacturer and will arrive in stock soon.",
+        in_stock: "The product is available in stock and ready to order.",
+      },
+      dialog: {
+        details: "Product details",
+        category: "Category",
+        status: "Status",
+        progress: "Progress",
+        close: "Close",
+        aboutStatus: "About this status",
       },
     },
 
