@@ -104,6 +104,23 @@ export const ProductSection = () => {
   const { t, direction, language } = useLanguage();
   const tp = t.product as any;
   const [selected, setSelected] = useState<CatalogProduct | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollState, setScrollState] = useState<{ canScroll: boolean; atBottom: boolean }>({ canScroll: false, atBottom: false });
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const update = () => {
+      const canScroll = el.scrollHeight > el.clientHeight + 4;
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8;
+      setScrollState({ canScroll, atBottom });
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => { el.removeEventListener("scroll", update); ro.disconnect(); };
+  }, []);
 
   const nameFor = (p: any) => {
     if (language === "fr") return p.name_fr ?? p.name;
