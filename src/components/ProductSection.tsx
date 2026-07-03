@@ -254,7 +254,11 @@ export const ProductSection = () => {
                   return (
                     <li
                       key={p.id}
-                      className={`group flex flex-col md:flex-row md:items-center gap-3 md:gap-6 px-4 md:px-8 py-4 transition-all duration-300 hover:bg-primary/5 ${
+                      onClick={() => setSelected(p)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelected(p); } }}
+                      className={`group flex flex-col md:flex-row md:items-center gap-3 md:gap-6 px-4 md:px-8 py-4 cursor-pointer transition-all duration-300 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/40 ${
                         i % 2 === 0 ? "bg-background/40" : "bg-muted/30"
                       }`}
                     >
